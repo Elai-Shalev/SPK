@@ -24,13 +24,32 @@ typedef struct {
 //Read the File
 //Matricies are flattened arrays 
 
-double* calc_weighted_matrix(double* points, int n){
+double* calc_weighted_matrix(double* points){
+    int i;
+    int j;
+    double* weighted_adj_matrix = (double*)malloc(num_of_vectors, sizeof(double)*pow(num_of_vectors,2));
+    for(i = 0; i<n; i++){
+        for(j=i; j<n; j++){
+            if(i==j){
+                weighted_adj_matrix[n*i+j] = 0;
+            }
+            else{
+                weighted_adj_matrix[n*i+j] = exp(-0.5*norm2(points,i,j));
+
+            }
+        }
+    }
+
 }
-double* calc_diagonal_deg_matrix(double* mat, int n){
+double norm2(double* matrix, int i, int j){
+
 }
-double* calc_lnorm_matrix(double* mat, int n){
+
+double* calc_diagonal_deg_matrix(double* mat){
 }
-double* calc_eigen(double* mat, int n){
+double* calc_lnorm_matrix(double* mat){
+}
+double* calc_eigen(double* mat){
 }
 
 
