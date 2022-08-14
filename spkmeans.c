@@ -93,7 +93,7 @@ double* calc_lnorm_matrix(double* points){
 }
 
 
-int* max_mat_entry(double* mat, int size){
+int* max_abs_off_diagonal_entry(double* mat, int size){
     int* data = (double*)malloc(sizeof(int)*2);
     int i,j;
 
@@ -144,14 +144,19 @@ double* create_initial_p_matrix(i, j, c, s){
     return P;
 }
 
-double* calc_eigen(double* A){
+double** calc_eigen(double* A){
+    double** result;
     double* P;
     double* A_next;
+    double* V;
     int* data;
-    double c, s;
+    double c, s, sum_A_squared, sum_A_next_squared;
     int max_i, max_j, r, l;
+    int iteration = 1;
+
+    result = (double**)malloc(sizeof(double*)*2);
     do{
-        data = max_mat_entry(A, num_of_vectors);
+        data = max_abs_off_diagonal_entry(A, num_of_vectors);
         max_i = data[0];
         max_j = data[1];
         P = pivot_jacobi(A, max_i, max_j);
@@ -188,8 +193,24 @@ double* calc_eigen(double* A){
             }
         }
         A_next[max_i*num_of_vectors+max_j] = 0;
+
+        if (iteration == 1){
+            V = create_initial_p_matrix(max_i, max_j, c, s);
+        }
+        else{
+            rotation_matrix_multiply_simplified(V, max_i, max_j, c, s);
+        }
+
+        sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
+        sum_A_next_squared = sum_squares_off_diagonal(A_next, num_of_vectors);
+        free(A);
+        A = A_next;
     }
-    while(1==1);
+    while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) || 
+    (iteration < JACOBIAN_MAX_ITER));
+
+    result[0] = A;
+    result[1] = V;
 }
 
 
