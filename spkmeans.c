@@ -263,6 +263,7 @@ int main(int argc, char* argv[]){
         printf("Invalid Input!");
         exit(1);
     }
+    
     //File Read
     FILE* fp;
     fp = fopen(argv[2], "r"); 
@@ -289,14 +290,12 @@ int main(int argc, char* argv[]){
             printf("%d, ", eigen_result[0][num_of_vectors*i+i]);
         }
         printf("\n");
-        for(i =0; i<num_of_vectors; i++){
-            for(j=0; j<num_of_vectors; j++){
-                printf("%d ", eigen_result[1][num_of_vectors*i+j]);
+        for(i = 0; i < num_of_vectors; i++){
+            for(j = 0; j < num_of_vectors; j++){
+                printf("%d ", eigen_result[1][num_of_vectors*i + j]);
             }
             printf("\n");
     }
-
-
     fclose(fp);
     return 0;
 }
