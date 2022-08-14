@@ -9,6 +9,8 @@
 int MAX_ITER;
 int K;
 double const EPSILON;
+double const JACOBIAN_EPSILON = 0.00001;
+int const JACOBIAN_MAX_ITER = 100;
 int dim;
 int num_of_vectors;
 
@@ -80,7 +82,49 @@ double* calc_lnorm_matrix(double* points){
 }
 
 
+int* max_mat_entry(double* mat, int size){
+    int* data = (double*)malloc(sizeof(double)*2);
+    int i,j;
+
+    data[0] = 0;
+    data[1] = 0;
+
+    for (i = 0; i < size; i++){
+        for (j = 0; j < size; j++){
+            if (mat[(int)(data[0])*size+(int)(data[1])] < mat[i*size+j]){
+                data[0] = i;
+                data[1] = j;
+            }
+        }
+    } 
+
+    return data;
+}
+
+
+double sum_squares_off_diagonal(double* mat, int size){
+    double sum = 0;
+    int i,j;
+
+    for (i = 0; i < size; i++){
+        for (j = 0; j < size; j++){
+            if (i != j){
+                sum += mat[i*size+j];
+            }
+        }
+    } 
+
+    return sum;
+}
+
 double* calc_eigen(double* mat){
+    do{
+        double* data = max_mat_entry(mat, num_of_vectors);
+        double max_i = data[0];
+        double max_j = data[1];
+        //double* P = pivot_jacobi
+    }
+    while(1==1);
 }
 
 
