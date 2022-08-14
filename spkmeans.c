@@ -112,9 +112,10 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     t = sign / (abs(theta)+ sqrt(SQR(theta)+1));
     c = 1 / (sqrt(SQR(t)+1));
     s = t*c;
-    
     double * return_vals = (double*)malloc(2*sizeof(double));
-
+    return_vals[0] = c;
+    return_vals[1] = s;
+    return return_vals;
 }
 
 int main(int argc, char* args[]){
