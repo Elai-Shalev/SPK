@@ -237,7 +237,7 @@ void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, d
 }
 
 int main(int argc, char* argv[]){
-    
+    int i, j;
     if(argc != 2){
         printf("Invalid Input!");
         exit(1);
@@ -283,7 +283,20 @@ int main(int argc, char* argv[]){
         if(res != SQR(num_of_vectors)){
             exit(1);
         }
+
+        double** eigen_result = calc_eigen(symmetrical_matrix);
+        for(i = 0; i<num_of_vectors; i++){
+            printf("%d, ", eigen_result[0][num_of_vectors*i+i]);
+        }
+        printf("\n");
+        for(i =0; i<num_of_vectors; i++){
+            for(j=0; j<num_of_vectors; j++){
+                printf("%d ", eigen_result[1][num_of_vectors*i+j]);
+            }
+            printf("\n");
     }
+
+
     fclose(fp);
     return 0;
 }
