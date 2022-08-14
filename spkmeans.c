@@ -94,7 +94,7 @@ double* calc_lnorm_matrix(double* points){
 
 
 int* max_mat_entry(double* mat, int size){
-    int* data = (double*)malloc(sizeof(double)*2);
+    int* data = (double*)malloc(sizeof(int)*2);
     int i,j;
 
     data[0] = 0;
@@ -128,16 +128,69 @@ double sum_squares_off_diagonal(double* mat, int size){
     return sum;
 }
 
-double* calc_eigen(double* mat){
+double* create_initial_p_matrix(i, j, c, s){
+    double* P = (double*)calloc(sizeof(double)*SQR(num_of_vectors));
+    int k;
+
+    for (k = 0; k < num_of_vectors; k++){
+        P[k*num_of_vectors + k] = 1;
+    }
+
+    P[i*num_of_vectors + i] = c;
+    P[j*num_of_vectors + j] = c;
+    P[i*num_of_vectors + j] = s;
+    P[j*num_of_vectors + i] = -1*s;
+
+    return P;
+}
+
+double* calc_eigen(double* A){
+    double* P;
+    double* A_next;
+    int* data;
+    double c, s;
+    int max_i, max_j, r, l;
     do{
-        double* data = max_mat_entry(mat, num_of_vectors);
-        double max_i = data[0];
-        double max_j = data[1];
-        //double* P = pivot_jacobi
+        data = max_mat_entry(A, num_of_vectors);
+        max_i = data[0];
+        max_j = data[1];
+        P = pivot_jacobi(A, max_i, max_j);
+        c = P[0];
+        s = P[1];
+        free(data);
+        free(P);
+
+        A_next = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+        
+        for (r = 0; r < num_of_vectors; r++){
+            for (l = 0; l < num_of_vectors; l++){
+                A_next[r*num_of_vectors+l] = A[r*num_of_vectors+l];
+                if ((r != max_i) && (r != max_j) && (l==max_i)){
+                    A_next[r*num_of_vectors+l] = c*A[r*num_of_vectors+max_i]-
+                                                 s*A[r*num_of_vectors+max_j];
+                }
+                if ((r != max_i) && (r != max_j) && (l==max_j)){
+                    A_next[r*num_of_vectors+l] = c*A[r*num_of_vectors+max_j]+
+                                                 s*A[r*num_of_vectors+max_i];
+                }
+                if ((r == max_i) && (l == max_i)){
+                    A_next[r*num_of_vectors+l] = 
+                    SQR(c)*A[max_i*num_of_vectors+max_i]+
+                    SQR(s)*A[max_j*num_of_vectors+max_j]-
+                    2*s*c*A[max_i*num_of_vectors+max_j];
+                }
+                if ((r == max_j) && (l == max_j)){
+                    A_next[r*num_of_vectors+l] = 
+                    SQR(s)*A[max_i*num_of_vectors+max_i]+
+                    SQR(c)*A[max_j*num_of_vectors+max_j]+
+                    2*s*c*A[max_i*num_of_vectors+max_j];
+                }
+            }
+        }
+        A_next[max_i*num_of_vectors+max_j] = 0;
     }
     while(1==1);
 }
-
 
 
 double * pivot_jacobi(double * A, int max_i, int max_j){
