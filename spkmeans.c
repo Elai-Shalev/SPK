@@ -95,6 +95,28 @@ double* calc_eigen(double* mat){
 }
 
 
+
+double * pivot_jacobi(double * A, int max_i, int max_j){
+    int sign;
+    double t;
+    double c;
+    double s;
+    double theta = (A[max_j*num_of_vectors+max_j] - A[max_i*num_of_vectors+max_i]) /
+                    (2*A[num_of_vectors*max_i + max_j]);
+    if(theta < 0){
+        sign = -1;
+    }
+    else{
+        sign = 1;
+    }
+    t = sign / (abs(theta)+ sqrt(SQR(theta)+1));
+    c = 1 / (sqrt(SQR(t)+1));
+    s = t*c;
+    
+    double * return_vals = (double*)malloc(2*sizeof(double));
+
+}
+
 int main(int argc, char* args[]){
     return 0;
 }
