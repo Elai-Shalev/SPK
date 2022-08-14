@@ -30,7 +30,7 @@ double* calc_weighted_matrix(double* points){
     int i;
     int j;
     double norm_i_j;
-    double* weighted_adj_matrix = (double*)malloc(num_of_vectors, sizeof(double)*pow(num_of_vectors,2));
+    double* weighted_adj_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
             if(i==j){
@@ -56,6 +56,17 @@ double norm2(double* points, int i, int j){
 }
 
 double* calc_diagonal_deg_matrix(double* mat){
+    int z,i;
+    int sum_row;
+    double* diagonal_deg_matrix = (double*)malloc(sizeof(double)*num_of_vectors);
+    for(i=0; i<num_of_vectors; i++){
+        sum_row = 0;
+        for(z = 0; z<num_of_vectors; z++){
+            sum_row += mat[num_of_vectors*i+z];
+        }
+        diagonal_deg_matrix[i] = sum_row;
+    }
+    return diagonal_deg_matrix;
 }
 
 double* calc_lnorm_matrix(double* points){
@@ -127,6 +138,28 @@ double* calc_eigen(double* mat){
     while(1==1);
 }
 
+
+
+double * pivot_jacobi(double * A, int max_i, int max_j){
+    int sign;
+    double t;
+    double c;
+    double s;
+    double theta = (A[max_j*num_of_vectors+max_j] - A[max_i*num_of_vectors+max_i]) /
+                    (2*A[num_of_vectors*max_i + max_j]);
+    if(theta < 0){
+        sign = -1;
+    }
+    else{
+        sign = 1;
+    }
+    t = sign / (abs(theta)+ sqrt(SQR(theta)+1));
+    c = 1 / (sqrt(SQR(t)+1));
+    s = t*c;
+    
+    double * return_vals = (double*)malloc(2*sizeof(double));
+
+}
 
 int main(int argc, char* args[]){
     return 0;
