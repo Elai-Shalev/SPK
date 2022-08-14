@@ -94,15 +94,16 @@ double* calc_lnorm_matrix(double* points){
 
 
 int* max_abs_off_diagonal_entry(double* mat, int size){
-    int* data = (double*)malloc(sizeof(int)*2);
-    int i,j;
+    int* data = (int*)malloc(sizeof(int)*2);
+    int i, j;
 
     data[0] = 0;
-    data[1] = 0;
+    data[1] = 1;
 
     for (i = 0; i < size; i++){
         for (j = 0; j < size; j++){
-            if (mat[(int)(data[0])*size+(int)(data[1])] < mat[i*size+j]){
+            if ((i != j) &&
+                (abs(mat[(data[0])*size+(data[1])]) < abs(mat[i*size+j]))){
                 data[0] = i;
                 data[1] = j;
             }
@@ -147,7 +148,6 @@ double* create_initial_p_matrix(i, j, c, s){
 double** calc_eigen(double* A){
     double** result;
     double* P;
-    double* A_next;
     double* V;
     int* data;
     double c, s, sum_A_squared, sum_A_next_squared;
@@ -165,34 +165,28 @@ double** calc_eigen(double* A){
         free(data);
         free(P);
 
-        A_next = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+        sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
         
         for (r = 0; r < num_of_vectors; r++){
-            for (l = 0; l < num_of_vectors; l++){
-                A_next[r*num_of_vectors+l] = A[r*num_of_vectors+l];
-                if ((r != max_i) && (r != max_j) && (l==max_i)){
-                    A_next[r*num_of_vectors+l] = c*A[r*num_of_vectors+max_i]-
-                                                 s*A[r*num_of_vectors+max_j];
-                }
-                if ((r != max_i) && (r != max_j) && (l==max_j)){
-                    A_next[r*num_of_vectors+l] = c*A[r*num_of_vectors+max_j]+
-                                                 s*A[r*num_of_vectors+max_i];
-                }
-                if ((r == max_i) && (l == max_i)){
-                    A_next[r*num_of_vectors+l] = 
-                    SQR(c)*A[max_i*num_of_vectors+max_i]+
-                    SQR(s)*A[max_j*num_of_vectors+max_j]-
-                    2*s*c*A[max_i*num_of_vectors+max_j];
-                }
-                if ((r == max_j) && (l == max_j)){
-                    A_next[r*num_of_vectors+l] = 
-                    SQR(s)*A[max_i*num_of_vectors+max_i]+
-                    SQR(c)*A[max_j*num_of_vectors+max_j]+
-                    2*s*c*A[max_i*num_of_vectors+max_j];
-                }
+            if ((r != max_i) && (r != max_j)){
+                A[r*num_of_vectors+max_i] = c*A[r*num_of_vectors+max_i]-
+                                                s*A[r*num_of_vectors+max_j];
+
+                A[r*num_of_vectors+max_j] = c*A[r*num_of_vectors+max_j]+
+                                                s*A[r*num_of_vectors+max_i];
             }
         }
-        A_next[max_i*num_of_vectors+max_j] = 0;
+        A[max_i*num_of_vectors+max_i] = 
+                SQR(c)*A[max_i*num_of_vectors+max_i]+
+                SQR(s)*A[max_j*num_of_vectors+max_j]-
+                2*s*c*A[max_i*num_of_vectors+max_j];
+
+        A[max_j*num_of_vectors+max_j] = 
+                SQR(s)*A[max_i*num_of_vectors+max_i]+
+                SQR(c)*A[max_j*num_of_vectors+max_j]+
+                2*s*c*A[max_i*num_of_vectors+max_j];
+
+        A[max_i*num_of_vectors+max_j] = 0;
 
         if (iteration == 1){
             V = create_initial_p_matrix(max_i, max_j, c, s);
@@ -201,10 +195,7 @@ double** calc_eigen(double* A){
             rotation_matrix_multiply_simplified(V, max_i, max_j, c, s);
         }
 
-        sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
-        sum_A_next_squared = sum_squares_off_diagonal(A_next, num_of_vectors);
-        free(A);
-        A = A_next;
+        sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
     }
     while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) || 
     (iteration < JACOBIAN_MAX_ITER));
