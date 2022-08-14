@@ -47,8 +47,34 @@ double norm2(double* matrix, int i, int j){
 
 double* calc_diagonal_deg_matrix(double* mat){
 }
+
 double* calc_lnorm_matrix(double* mat){
+    double* lnorm_matrix;
+    double* weighted_matrix = calc_weighted_matrix(mat);
+    double* diagonal_deg_matrix = calc_diagonal_deg_matrix(weighted_matrix);
+    int i,j;
+
+    lnorm_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    
+    for (i = 0; i < num_of_vectors; i++){
+        for (j = 0; j < num_of_vectors; j++){
+            lnorm_matrix[i*dim+j] = pow(diagonal_deg_matrix[i], -0.5)*
+                                    weighted_matrix[i*dim+j]*
+                                    pow(diagonal_deg_matrix[j], -0.5);
+            
+            if (i==j){
+                lnorm_matrix[i*dim+j] = 1 - lnorm_matrix[i*dim+j]; 
+            }
+            else{
+                lnorm_matrix[i*dim+j] *= -1;
+            }
+        }
+    }
+
+    return lnorm_matrix;
 }
+
+
 double* calc_eigen(double* mat){
 }
 
