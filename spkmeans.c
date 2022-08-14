@@ -162,6 +162,18 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     return return_vals;
 }
 
+void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, double s){
+    int i;
+    double v_ia;
+    double v_ib;
+    for (i=0; i<num_of_vectors; i++){
+        v_ia = mat[num_of_vectors*i+a];
+        v_ib = mat[num_of_vectors*i+b];
+        mat[num_of_vectors*i+a] = c*v_ia - s*v_ib;
+        mat[num_of_vectors*i+b] = s*v_ia + c*v_ib;
+    }
+}
+
 int main(int argc, char* args[]){
     return 0;
 }
