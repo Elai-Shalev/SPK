@@ -27,22 +27,30 @@ typedef struct {
 double* calc_weighted_matrix(double* points){
     int i;
     int j;
+    double norm_i_j;
     double* weighted_adj_matrix = (double*)malloc(num_of_vectors, sizeof(double)*pow(num_of_vectors,2));
-    for(i = 0; i<n; i++){
-        for(j=i; j<n; j++){
+    for(i = 0; i<num_of_vectors; i++){
+        for(j=i; j<num_of_vectors; j++){
             if(i==j){
-                weighted_adj_matrix[n*i+j] = 0;
+                weighted_adj_matrix[num_of_vectors*i+j] = 0;
             }
             else{
-                weighted_adj_matrix[n*i+j] = exp(-0.5*norm2(points,i,j));
-
+                double norm_i_j = norm2(points,i,j);
+                weighted_adj_matrix[num_of_vectors*i+j] = exp(-0.5*norm_i_j);
+                weighted_adj_matrix[num_of_vectors*j+i] = exp(-0.5*norm_i_j);
             }
         }
     }
+    return weighted_adj_matrix;
 
 }
-double norm2(double* matrix, int i, int j){
-
+double norm2(double* points, int i, int j){
+    int k;
+    int sum_diff;
+    for(k=0; k<dim; k++){
+        sum_diff += pow((points[dim*i+k] - points[dim*j+k]),2);
+    }
+    return sqrt(sum_diff);
 }
 
 double* calc_diagonal_deg_matrix(double* mat){
