@@ -28,7 +28,7 @@ double* calc_weighted_matrix(double* points){
     int i;
     int j;
     double norm_i_j;
-    double* weighted_adj_matrix = (double*)malloc(num_of_vectors, sizeof(double)*SQR(num_of_vectors));
+    double* weighted_adj_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
             if(i==j){
@@ -56,14 +56,13 @@ double norm2(double* points, int i, int j){
 double* calc_diagonal_deg_matrix(double* mat){
     int z,i;
     int sum_row;
-    double* diagonal_deg_matrix = (double*)calloc(num_of_vectors, sizeof(double)*num_of_vectors);
+    double* diagonal_deg_matrix = (double*)malloc(sizeof(double)*num_of_vectors);
     for(i=0; i<num_of_vectors; i++){
         sum_row = 0;
         for(z = 0; z<num_of_vectors; z++){
             sum_row += mat[num_of_vectors*i+z];
         }
         diagonal_deg_matrix[i] = sum_row;
-        sum_row=0;
     }
     return diagonal_deg_matrix;
 }
