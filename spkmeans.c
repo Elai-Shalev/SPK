@@ -142,9 +142,7 @@ double* calc_eigen(double* mat){
 
 double * pivot_jacobi(double * A, int max_i, int max_j){
     int sign;
-    double t;
-    double c;
-    double s;
+    double t, c, s;
     double theta = (A[max_j*num_of_vectors+max_j] - A[max_i*num_of_vectors+max_i]) /
                     (2*A[num_of_vectors*max_i + max_j]);
     if(theta < 0){
@@ -164,8 +162,7 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
 
 void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, double s){
     int i;
-    double v_ia;
-    double v_ib;
+    double v_ia, v_ib;
     for (i=0; i<num_of_vectors; i++){
         v_ia = mat[num_of_vectors*i+a];
         v_ib = mat[num_of_vectors*i+b];
