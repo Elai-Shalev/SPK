@@ -171,6 +171,54 @@ void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, d
     }
 }
 
-int main(int argc, char* args[]){
+int main(int argc, char* argv[]){
+    
+    if(argc != 2){
+        printf("Invalid Input!");
+        exit(1);
+    }
+
+    enum command{
+        wam, ddg, lnorm, jacobi,
+    };
+    enum command choice;
+    if(argv[1] == "wam"){
+        choice = wam;
+    }
+    if(argv[1] == "ddg"){
+        choice = ddg;
+    }
+    if(argv[1] == "lnorm"){
+        choice = lnorm;
+    }
+    if(argv[1] == "jacobi"){
+        choice = jacobi;
+    }
+    else{
+        printf("Invalid Input!");
+        exit(1);
+    }
+    //File Read
+    FILE* fp;
+    fp = fopen(argv[2], "r"); 
+    assert(fp);
+
+    if(choice != jacobi){
+        double* input_matrix = (double*)malloc(num_of_vectors*dim*sizeof(double));
+        assert(input_matrix);
+        int res = fread(input_matrix, sizeof(double), num_of_vectors*dim, fp);
+        if(res != num_of_vectors*dim){
+            exit(1);
+        }
+    }
+    if(choice == jacobi){
+        double* symmetrical_matrix = (double*)malloc(SQR(num_of_vectors)*sizeof(double));
+        assert(symmetrical_matrix);
+        int res = fread(symmetrical_matrix, sizeof(double), SQR(num_of_vectors), fp);
+        if(res != SQR(num_of_vectors)){
+            exit(1);
+        }
+    }
+    fclose(fp);
     return 0;
 }
