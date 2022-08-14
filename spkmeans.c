@@ -58,15 +58,16 @@ double* calc_lnorm_matrix(double* mat){
     
     for (i = 0; i < num_of_vectors; i++){
         for (j = 0; j < num_of_vectors; j++){
-            lnorm_matrix[i*dim+j] = pow(diagonal_deg_matrix[i], -0.5)*
-                                    weighted_matrix[i*dim+j]*
+            lnorm_matrix[i*num_of_vectors+j] = pow(diagonal_deg_matrix[i], -0.5)*
+                                    weighted_matrix[i*num_of_vectors+j]*
                                     pow(diagonal_deg_matrix[j], -0.5);
             
             if (i==j){
-                lnorm_matrix[i*dim+j] = 1 - lnorm_matrix[i*dim+j]; 
+                lnorm_matrix[i*num_of_vectors+j] = 
+                1 - lnorm_matrix[i*num_of_vectors+j]; 
             }
             else{
-                lnorm_matrix[i*dim+j] *= -1;
+                lnorm_matrix[i*num_of_vectors+j] *= -1;
             }
         }
     }
