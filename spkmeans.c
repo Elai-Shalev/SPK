@@ -296,6 +296,9 @@ int main(int argc, char* argv[]){
             }
             printf("\n");
     }
+    
     fclose(fp);
     return 0;
+    }
 }
+
