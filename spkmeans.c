@@ -170,7 +170,7 @@ double* calc_weighted_matrix(double* points){
 }
 double euclidian_dist(double* points, int i, int j){
     int k;
-    int sum_diff;
+    int sum_diff = 0;
     for(k=0; k<dim; k++){
         sum_diff += pow((points[dim*i+k] - points[dim*j+k]),2);
     }
@@ -446,7 +446,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%.4f%c", matrix[num_of_vectors*i + j], deli);
+            printf("%.4f%c", matrix[num_rows*i + j], deli);
         }
         printf("\n");
     }
@@ -470,9 +470,6 @@ int main(int argc, char* argv[]){
         exit(1);
     }
     points = read_file(argv[2]);
-    /*delete me!*/
-    print_matrix(points,',', num_of_vectors, dim);
-
     if(strcmp(argv[1],"jacobi") == 0){
         data = calc_eigen(points);
         for(i = 0; i<num_of_vectors; i++){
