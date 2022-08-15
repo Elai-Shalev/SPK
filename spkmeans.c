@@ -6,7 +6,6 @@
 #include "spkmeans.h"
 
 
-
 /* Global Variables */
 int MAX_ITER;
 int K;
