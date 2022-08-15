@@ -43,8 +43,13 @@ int determine_k(double* l_norm){
 
 }
 
-double** convert_double_array_to_matrix(double* array, int size){
-    
+double** convert_double_array_to_matrix(double* array, int size_row, int num_rows){
+    int i;
+    double** mat = (double**)malloc(sizeof(double*)*num_rows);
+    for(i=0; i<num_rows; i++){
+        mat[i] = &array[i*size_row];
+    }
+    return mat;
 }
 
 void sort_eigen_v(double* eigen_values, double** eigen_vectors){
