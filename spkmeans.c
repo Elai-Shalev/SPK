@@ -159,13 +159,16 @@ double* create_initial_p_matrix(i, j, c, s){
 double** calc_eigen(double* A){
     double** result;
     double* P;
+    double* eigenvalues;
     double* V;
     int* data;
     double c, s, sum_A_squared, sum_A_next_squared;
-    int max_i, max_j, r, l;
+    int max_i, max_j, r, l, i;
     int iteration = 1;
 
     result = (double**)malloc(sizeof(double*)*2);
+    eigenvalues = (double*)malloc(sizeof(double)*num_of_vectors);
+
     do{
         data = max_abs_off_diagonal_entry(A, num_of_vectors);
         max_i = data[0];
@@ -212,7 +215,12 @@ double** calc_eigen(double* A){
     while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) || 
     (iteration < JACOBIAN_MAX_ITER));
 
-    result[0] = A;
+    for (i = 0; i < num_of_vectors; i++){
+        eigenvalues[i] = A[num_of_vectors*i+i];
+    }
+    free(A);
+
+    result[0] = eigenvalues;
     result[1] = V;
 }
 
