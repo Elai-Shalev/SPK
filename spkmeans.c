@@ -464,14 +464,14 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    if(!(strcmp(argv[1],"jacobi") || strcmp(argv[1], "wam") || 
-       strcmp(argv[1],"ddg") || strcmp(argv[1], "lnorm"))){
+    if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
+       strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0)){
         printf("Invalid Input!");
         exit(1);
     }
     points = read_file(argv[2]);
 
-    if(strcmp(argv[1],"jacobi")){
+    if(strcmp(argv[1],"jacobi") == 0){
         data = calc_eigen(points);
         for(i = 0; i<num_of_vectors; i++){
             printf("%d, ", data[0][i]);
@@ -481,12 +481,12 @@ int main(int argc, char* argv[]){
         free(data);
     }
 
-    if(strcmp(argv[1], "wam")){
+    if(strcmp(argv[1], "wam") == 0){
         weighted_matrix = calc_weighted_matrix(points);
         print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
     }
 
-    if(strcmp(argv[1],"ddg")){
+    if(strcmp(argv[1],"ddg") == 0){
         diag_deg_matrix = 
         calc_diagonal_deg_matrix(calc_weighted_matrix(points));
         for(i=0; i<num_of_vectors; i++){
@@ -502,7 +502,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    if(strcmp(argv[1],"lnorm")){
+    if(strcmp(argv[1],"lnorm") == 0){
         lnorm = calc_lnorm_matrix(points);
         print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
     }
