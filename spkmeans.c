@@ -38,11 +38,6 @@ double** dimension_reduction_spk(double* points){
     sort_eigen_v(eigen_values, eigen_vectors_matrix);
     k = determine_k(eigen_values);
 
-
-    
-
-
-
 }
 
 void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
