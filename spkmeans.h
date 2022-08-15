@@ -1,4 +1,4 @@
-double** dimension_reduction_spk(double* points);
+double* dimension_reduction_spk(double* points);
 double* transpose_matrix_copy(double** matrix, int rows, int cols);
 void transpose_square_matrix_inplace(double** matrix, int size);
 void normalize_first_k_vectors(double** eigen_vectors_matrix, int k);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <spkmeans.h>
+#include "spkmeans.h"
 
 
 
@@ -30,7 +30,7 @@ typedef struct {
     int cluster;
 } Vector;
 
-double** dimension_reduction_spk(double* points){
+double* dimension_reduction_spk(double* points){
     double* l_norm; 
     double** data;
     double* eigen_values;
