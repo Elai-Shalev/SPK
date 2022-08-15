@@ -446,7 +446,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%d%c", matrix[num_of_vectors*i + j], deli);
+            printf("%.4f%c", matrix[num_of_vectors*i + j], deli);
         }
         printf("\n");
     }
@@ -470,11 +470,13 @@ int main(int argc, char* argv[]){
         exit(1);
     }
     points = read_file(argv[2]);
+    /*delete me!*/
+    print_matrix(points,',', num_of_vectors, dim);
 
     if(strcmp(argv[1],"jacobi") == 0){
         data = calc_eigen(points);
         for(i = 0; i<num_of_vectors; i++){
-            printf("%d, ", data[0][i]);
+            printf("%.4f, ", data[0][i]);
         }
         printf("\n");
         print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
@@ -492,7 +494,7 @@ int main(int argc, char* argv[]){
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
-                    printf("%d ,", diag_deg_matrix[i]);
+                    printf("%.4f ,", diag_deg_matrix[i]);
                 }
                 else{
                     printf("0 ,");
