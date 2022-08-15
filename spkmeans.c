@@ -196,6 +196,7 @@ double** calc_eigen(double* A){
         }
 
         sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
+        iteration++;
     }
     while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) || 
     (iteration < JACOBIAN_MAX_ITER));
