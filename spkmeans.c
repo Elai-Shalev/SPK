@@ -28,19 +28,55 @@ double** dimension_reduction_spk(double* points){
     double** data;
     double* eigen_values;
     double* eigen_vectors;
+    double** eigen_vectors_matrix;
+    int k;
     l_norm = calc_lnorm_matrix(points);
     data = calc_eigen(l_norm);
     eigen_values = data[0];
     eigen_vectors = data[1];
+    eigen_vectors_matrix = convert_double_array_to_matrix(eigen_vectors,num_of_vectors,num_of_vectors);
+    sort_eigen_v(eigen_values, eigen_vectors_matrix);
+    k = determine_k(eigen_values);
 
 
     
 
 
+
 }
 
-int determine_k(double* l_norm){
+void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
+    int i,j;
+    double curr_norma;
+    for(i = 0; i<num_of_vectors; i++){
+        curr_norma = calc_norma(eigen_vectors_matrix[i],num_of_vectors);
+        for(j=0; j<k; j++){
+            eigen_vectors_matrix[i][j] /= curr_norma;
+        }
+    }
+}
 
+double calc_norma(double* vector, int size){
+    double sum;
+    int i;
+    for(i=0; i<num_of_vectors; i++){
+        sum += SQR(vector[i]);
+    }
+    return sqrt(sum);
+}
+
+int determine_k(double* sorted_eigen_values){
+    int i, k;
+    double gap, curr_gap;
+    gap = INFINITY*-1;
+    for(i=0; i<num_of_vectors-1; i++){
+        curr_gap = abs(sorted_eigen_values[i] - sorted_eigen_values[i-1]);
+        if(curr_gap > gap){
+            gap = curr_gap;
+            k=i;
+        }
+    }
+    return k;
 }
 
 double** convert_double_array_to_matrix(double* array, int size_row, int num_rows){
@@ -82,7 +118,7 @@ double* calc_weighted_matrix(double* points){
                 weighted_adj_matrix[num_of_vectors*i+j] = 0;
             }
             else{
-                double norm_i_j = norm2(points,i,j);
+                double norm_i_j = euclidian_dist(points,i,j);
                 weighted_adj_matrix[num_of_vectors*i+j] = exp(-0.5*norm_i_j);
                 weighted_adj_matrix[num_of_vectors*j+i] = exp(-0.5*norm_i_j);
             }
@@ -91,7 +127,7 @@ double* calc_weighted_matrix(double* points){
     return weighted_adj_matrix;
 
 }
-double norm2(double* points, int i, int j){
+double euclidian_dist(double* points, int i, int j){
     int k;
     int sum_diff;
     for(k=0; k<dim; k++){
