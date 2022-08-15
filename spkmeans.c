@@ -57,6 +57,7 @@ double* transpose_matrix_copy(double** matrix, int rows, int cols)
     double* transposed_matrix;
     int i, j;
     transposed_matrix = (double*)malloc(sizeof(double)*rows*cols);
+    NULL_ERROR_CHECK(transposed_matrix);
 
     for(i = 0; i < rows; i++){
         for(j = 0; j < cols; j++){
@@ -117,6 +118,7 @@ int determine_k(double* sorted_eigen_values){
 double** convert_double_array_to_matrix(double* array, int size_row, int num_rows){
     int i;
     double** mat = (double**)malloc(sizeof(double*)*num_rows);
+    NULL_ERROR_CHECK(mat);
     for(i=0; i<num_rows; i++){
         mat[i] = &array[i*size_row];
     }
@@ -147,6 +149,7 @@ double* calc_weighted_matrix(double* points){
     int j;
     double norm_i_j;
     double* weighted_adj_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    NULL_ERROR_CHECK(weighted_adj_matrix);
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
             if(i==j){
@@ -175,6 +178,7 @@ double* calc_diagonal_deg_matrix(double* mat){
     int z,i;
     int sum_row;
     double* diagonal_deg_matrix = (double*)malloc(sizeof(double)*num_of_vectors);
+    NULL_ERROR_CHECK(diagonal_deg_matrix);
     for(i=0; i<num_of_vectors; i++){
         sum_row = 0;
         for(z = 0; z<num_of_vectors; z++){
@@ -192,6 +196,7 @@ double* calc_lnorm_matrix(double* points){
     int i,j;
 
     lnorm_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    NULL_ERROR_CHECK(lnorm_matrix);
     
     for (i = 0; i < num_of_vectors; i++){
         for (j = 0; j < num_of_vectors; j++){
@@ -211,6 +216,7 @@ double* calc_lnorm_matrix(double* points){
 
 int* max_abs_off_diagonal_entry(double* mat, int size){
     int* data = (int*)malloc(sizeof(int)*2);
+    NULL_ERROR_CHECK(data);
     int i, j;
 
     data[0] = 0;
@@ -247,6 +253,7 @@ double sum_squares_off_diagonal(double* mat, int size){
 
 double* create_initial_p_matrix(i, j, c, s){
     double* P = (double*)calloc(SQR(num_of_vectors), sizeof(double));
+    NULL_ERROR_CHECK(P);
     int k;
 
     for (k = 0; k < num_of_vectors; k++){
@@ -272,7 +279,9 @@ double** calc_eigen(double* A){
     int iteration = 1;
 
     result = (double**)malloc(sizeof(double*)*2);
+    NULL_ERROR_CHECK(result);
     eigenvalues = (double*)malloc(sizeof(double)*num_of_vectors);
+    NULL_ERROR_CHECK(eigenvalues);
 
     do{
         data = max_abs_off_diagonal_entry(A, num_of_vectors);
@@ -346,6 +355,7 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     c = 1 / (sqrt(SQR(t)+1));
     s = t*c;
     double * return_vals = (double*)malloc(2*sizeof(double));
+    NULL_ERROR_CHECK(return_vals);
     return_vals[0] = c;
     return_vals[1] = s;
     return return_vals;
