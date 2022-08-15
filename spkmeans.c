@@ -2,6 +2,7 @@
 // include "Python.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "spkmeans.h"
 
@@ -463,14 +464,14 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    if(argv[1] != "jacobi" && argv[1] != "wam" && 
-       argv[1] != "ddg" && argv[1] != "lnorm"){
+    if(!(strcmp(argv[1],"jacobi") || strcmp(argv[1], "wam") || 
+       strcmp(argv[1],"ddg") || strcmp(argv[1], "lnorm"))){
         printf("Invalid Input!");
         exit(1);
     }
     points = read_file(argv[2]);
 
-    if(argv[1] == "jacobi"){
+    if(strcmp(argv[1],"jacobi")){
         data = calc_eigen(points);
         for(i = 0; i<num_of_vectors; i++){
             printf("%d, ", data[0][i]);
@@ -480,12 +481,12 @@ int main(int argc, char* argv[]){
         free(data);
     }
 
-    if(argv[1] == "wam"){
+    if(strcmp(argv[1], "wam")){
         weighted_matrix = calc_weighted_matrix(points);
         print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
     }
 
-    if(argv[1] == "ddg"){
+    if(strcmp(argv[1],"ddg")){
         diag_deg_matrix = 
         calc_diagonal_deg_matrix(calc_weighted_matrix(points));
         for(i=0; i<num_of_vectors; i++){
@@ -501,7 +502,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    if(argv[1] = "lnorm"){
+    if(strcmp(argv[1],"lnorm")){
         lnorm = calc_lnorm_matrix(points);
         print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
     }
