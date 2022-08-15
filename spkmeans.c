@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <spkmeans.h>
 
 
 
@@ -256,7 +257,7 @@ double sum_squares_off_diagonal(double* mat, int size){
     return sum;
 }
 
-double* create_initial_p_matrix(i, j, c, s){
+double* create_initial_p_matrix(int i, int j, double c, double s){
     double* P = (double*)calloc(SQR(num_of_vectors), sizeof(double));
     NULL_ERROR_CHECK(P);
     int k;
