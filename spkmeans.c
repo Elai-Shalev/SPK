@@ -115,7 +115,9 @@ int determine_k(double* sorted_eigen_values){
     return k;
 }
 
-double** convert_double_array_to_matrix(double* array, int size_row, int num_rows){
+double** convert_double_array_to_matrix(double* array, 
+                                        int size_row, 
+                                        int num_rows){
     int i;
     double** mat = (double**)malloc(sizeof(double*)*num_rows);
     NULL_ERROR_CHECK(mat);
@@ -148,7 +150,8 @@ double* calc_weighted_matrix(double* points){
     int i;
     int j;
     double norm_i_j;
-    double* weighted_adj_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    double* weighted_adj_matrix = 
+    (double*)malloc(sizeof(double)*SQR(num_of_vectors));
     NULL_ERROR_CHECK(weighted_adj_matrix);
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
@@ -177,7 +180,8 @@ double euclidian_dist(double* points, int i, int j){
 double* calc_diagonal_deg_matrix(double* mat){
     int z,i;
     int sum_row;
-    double* diagonal_deg_matrix = (double*)malloc(sizeof(double)*num_of_vectors);
+    double* diagonal_deg_matrix = 
+    (double*)malloc(sizeof(double)*num_of_vectors);
     NULL_ERROR_CHECK(diagonal_deg_matrix);
     for(i=0; i<num_of_vectors; i++){
         sum_row = 0;
@@ -200,7 +204,8 @@ double* calc_lnorm_matrix(double* points){
     
     for (i = 0; i < num_of_vectors; i++){
         for (j = 0; j < num_of_vectors; j++){
-            lnorm_matrix[i*num_of_vectors+j] = -1* pow(diagonal_deg_matrix[i], -0.5)*
+            lnorm_matrix[i*num_of_vectors+j] = 
+                                    -1* pow(diagonal_deg_matrix[i], -0.5)*
                                     weighted_matrix[i*num_of_vectors+j]*
                                     pow(diagonal_deg_matrix[j], -0.5);
             
@@ -343,7 +348,8 @@ double** calc_eigen(double* A){
 double * pivot_jacobi(double * A, int max_i, int max_j){
     int sign;
     double t, c, s;
-    double theta = (A[max_j*num_of_vectors+max_j] - A[max_i*num_of_vectors+max_i]) /
+    double theta = (A[max_j*num_of_vectors+max_j] 
+                    - A[max_i*num_of_vectors+max_i]) /
                     (2*A[num_of_vectors*max_i + max_j]);
     if(theta < 0){
         sign = -1;
@@ -361,7 +367,9 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     return return_vals;
 }
 
-void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, double s){
+void rotation_matrix_multiply_simplified(double * mat, 
+                                         int a, int b, 
+                                         double c, double s){
     int i;
     double v_ia, v_ib;
     for (i=0; i<num_of_vectors; i++){
@@ -456,7 +464,8 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    if(argv[1] != "jacobi" && argv[1] != "wam" && argv[1] != "ddg" && argv[1] != "lnorm"){
+    if(argv[1] != "jacobi" && argv[1] != "wam" && 
+       argv[1] != "ddg" && argv[1] != "lnorm"){
         printf("Invalid Input!");
         exit(1);
     }
@@ -478,7 +487,8 @@ int main(int argc, char* argv[]){
     }
 
     if(argv[1] == "ddg"){
-        diag_deg_matrix = calc_diagonal_deg_matrix(calc_weighted_matrix(points));
+        diag_deg_matrix = 
+        calc_diagonal_deg_matrix(calc_weighted_matrix(points));
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
