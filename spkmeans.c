@@ -23,8 +23,19 @@ typedef struct {
     int cluster;
 } Vector;
 
-//Read the File
-//Matricies are flattened arrays 
+double** dimension_reduction_spk(double* points){
+    double* l_norm; 
+    double** data;
+    l_norm = calc_lnorm_matrix(points);
+    data = calc_eigen(l_norm);
+    
+
+
+}
+
+int determine_k(double* l_norm){
+
+}
 
 double* calc_weighted_matrix(double* points){
     int i;
@@ -288,7 +299,7 @@ int main(int argc, char* argv[]){
 
         double** eigen_result = calc_eigen(symmetrical_matrix);
         for(i = 0; i<num_of_vectors; i++){
-            printf("%d, ", eigen_result[0][num_of_vectors*i+i]);
+            printf("%d, ", eigen_result[0][i]);
         }
         printf("\n");
         for(i = 0; i < num_of_vectors; i++){
