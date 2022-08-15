@@ -26,8 +26,14 @@ typedef struct {
 double** dimension_reduction_spk(double* points){
     double* l_norm; 
     double** data;
+    double* eigen_values;
+    double* eigen_vectors;
     l_norm = calc_lnorm_matrix(points);
     data = calc_eigen(l_norm);
+    eigen_values = data[0];
+    eigen_vectors = data[1];
+
+
     
 
 
@@ -35,6 +41,14 @@ double** dimension_reduction_spk(double* points){
 
 int determine_k(double* l_norm){
 
+}
+
+double** convert_double_array_to_matrix(double* array, int size){
+    
+}
+
+void sort_eigen_v(double* eigen_values, double** eigen_vectors){
+    
 }
 
 double* calc_weighted_matrix(double* points){
