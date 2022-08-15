@@ -5,6 +5,7 @@
 #include <math.h>
 
 
+
 /* Global Variables */
 int MAX_ITER;
 int K;
@@ -16,6 +17,11 @@ int num_of_vectors;
 
 /* Macros */
 #define SQR(x) ((x)*(x))
+#define NULL_ERROR_CHECK(x) {\
+    if(x == NULL){\
+        printf("An Error Has Occurred");\
+        exit(1);\
+    }}
 
 /* Structs */
 typedef struct {
@@ -356,69 +362,130 @@ void rotation_matrix_multiply_simplified(double * mat, int a, int b, double c, d
     }
 }
 
-int main(int argc, char* argv[]){
-    int i, j;
-    if(argc != 2){
-        printf("Invalid Input!");
-        exit(1);
+
+double* read_file(char* file_in){
+    FILE *ifp;
+    int vec_size = 1;
+    int flag =0;
+    int vector_count=0;
+    char c = 'a';
+    int nch =0; 
+    int i = 0;
+    int size = 1000;
+    char *buf = malloc(size);
+    NULL_ERROR_CHECK(buf);
+    int startplace;
+    int vec_idx;
+    char* g;
+    double* points;
+
+    ifp = NULL;
+    ifp = fopen(file_in, "r");
+    NULL_ERROR_CHECK(ifp);
+    while((c = fgetc(ifp)) != EOF){
+        if(nch >= size-1){
+            size *= 2;
+            buf = realloc(buf, size);
+            NULL_ERROR_CHECK(buf);
+        }
+        if(flag==0){
+            if (c == ','){
+                vec_size++;
+            }
+        }
+        if(c == '\n'){
+            flag = 1;
+            vector_count++;
+        }
+        buf[nch++] = c;
     }
 
-    enum command{
-        wam, ddg, lnorm, jacobi,
-    };
-    enum command choice;
-    if(argv[1] == "wam"){
-        choice = wam;
-    }
-    if(argv[1] == "ddg"){
-        choice = ddg;
-    }
-    if(argv[1] == "lnorm"){
-        choice = lnorm;
-    }
-    if(argv[1] == "jacobi"){
-        choice = jacobi;
-    }
-    else{
-        printf("Invalid Input!");
-        exit(1);
-    }
+    buf[nch++] = '\000';
+    num_of_vectors = vector_count;
+    dim = vec_size;
+    fclose(ifp);
     
-    //File Read
-    FILE* fp;
-    fp = fopen(argv[2], "r"); 
-    assert(fp);
-
-    if(choice != jacobi){
-        double* input_matrix = (double*)malloc(num_of_vectors*dim*sizeof(double));
-        assert(input_matrix);
-        int res = fread(input_matrix, sizeof(double), num_of_vectors*dim, fp);
-        if(res != num_of_vectors*dim){
-            exit(1);
+    startplace = 0;
+    vec_idx = 0;
+    points = (double*)malloc(num_of_vectors*dim*sizeof(double));
+    NULL_ERROR_CHECK(points);
+    while(buf[i] != '\000'){
+        startplace = i;
+        while(buf[i] != ',' && buf[i] != '\n' && buf[i] != '\000'){
+            i++;
         }
+        points[vec_idx] = (double)strtod(&buf[startplace], &g);
+        if (buf[i] != '\000'){
+            i++;
+        }
+        vec_idx++;
     }
-    if(choice == jacobi){
-        double* symmetrical_matrix = (double*)malloc(SQR(num_of_vectors)*sizeof(double));
-        assert(symmetrical_matrix);
-        int res = fread(symmetrical_matrix, sizeof(double), SQR(num_of_vectors), fp);
-        if(res != SQR(num_of_vectors)){
-            exit(1);
-        }
+    free(buf);
+    return points;
+}
 
-        double** eigen_result = calc_eigen(symmetrical_matrix);
-        for(i = 0; i<num_of_vectors; i++){
-            printf("%d, ", eigen_result[0][i]);
+void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
+    int i,j;
+    for(i = 0; i < num_rows; i++){
+        for(j = 0; j < num_cols; j++){
+            printf("%d%c", matrix[num_of_vectors*i + j], deli);
         }
         printf("\n");
-        for(i = 0; i < num_of_vectors; i++){
-            for(j = 0; j < num_of_vectors; j++){
-                printf("%d ", eigen_result[1][num_of_vectors*i + j]);
-            }
-            printf("\n");
-    }
-    
-    fclose(fp);
-    return 0;
     }
 }
+
+int main(int argc, char* argv[]){
+    int i, j;
+    double* points;
+    double** data;
+    double* weighted_matrix;
+    double* diag_deg_matrix;
+    double* lnorm;
+    if(argc != 3){
+        printf("Invalid Input!");
+        exit(1);
+    }
+
+    if(argv[1] != "jacobi" && argv[1] != "wam" && argv[1] != "ddg" && argv[1] != "lnorm"){
+        printf("Invalid Input!");
+        exit(1);
+    }
+    points = read_file(argv[2]);
+
+    if(argv[1] == "jacobi"){
+        data = calc_eigen(points);
+        for(i = 0; i<num_of_vectors; i++){
+            printf("%d, ", data[0][i]);
+        }
+        printf("\n");
+        print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
+        free(data);
+    }
+
+    if(argv[1] == "wam"){
+        weighted_matrix = calc_weighted_matrix(points);
+        print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
+    }
+
+    if(argv[1] == "ddg"){
+        diag_deg_matrix = calc_diagonal_deg_matrix(calc_weighted_matrix(points));
+        for(i=0; i<num_of_vectors; i++){
+            for(j=0; j<num_of_vectors; j++){
+                if(i==j){
+                    printf("%d ,", diag_deg_matrix[i]);
+                }
+                else{
+                    printf("0 ,");
+                }
+            }
+            printf("\n");
+        }
+    }
+
+    if(argv[1] = "lnorm"){
+        lnorm = calc_lnorm_matrix(points);
+        print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
+    }
+}
+
 
