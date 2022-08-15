@@ -29,21 +29,55 @@ double** dimension_reduction_spk(double* points){
     double* eigen_values;
     double* eigen_vectors;
     double** eigen_vectors_matrix;
+    double* normalized_eigen_vectors;
     int k;
     l_norm = calc_lnorm_matrix(points);
     data = calc_eigen(l_norm);
     eigen_values = data[0];
     eigen_vectors = data[1];
-    eigen_vectors_matrix = convert_double_array_to_matrix(eigen_vectors,num_of_vectors,num_of_vectors);
+    eigen_vectors_matrix = convert_double_array_to_matrix(
+        eigen_vectors,num_of_vectors,num_of_vectors);
+    transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
     sort_eigen_v(eigen_values, eigen_vectors_matrix);
     k = determine_k(eigen_values);
+    normalize_first_k_vectors(eigen_vectors_matrix, k);
+    normalized_eigen_vectors = transpose_matrix_copy(eigen_vectors_matrix, 
+                                                     k, num_of_vectors);
+    return normalized_eigen_vectors;
+}
 
+double* transpose_matrix_copy(double** matrix, int rows, int cols)
+{
+    double* transposed_matrix;
+    int i, j;
+    transposed_matrix = (double*)malloc(sizeof(double)*rows*cols);
+
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < cols; j++){
+            transposed_matrix[i*rows+j] = matrix[j][i];
+        }
+    }
+
+    return transposed_matrix;
+}
+
+void transpose_square_matrix_inplace(double** matrix, int size){
+    int i, j;
+    double temp;
+
+    for(i = 0; i < size; i++){
+        for(j = 0; j < size; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+    }
 }
 
 void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
     int i,j;
     double curr_norma;
-    for(i = 0; i<num_of_vectors; i++){
+    for(i = 0; i<k; i++){
         curr_norma = calc_norma(eigen_vectors_matrix[i],num_of_vectors);
         for(j=0; j<k; j++){
             eigen_vectors_matrix[i][j] /= curr_norma;
