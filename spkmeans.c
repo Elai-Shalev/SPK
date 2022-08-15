@@ -43,7 +43,7 @@ double** dimension_reduction_spk(double* points){
     normalize_first_k_vectors(eigen_vectors_matrix, k);
     normalized_eigen_vectors = transpose_matrix_copy(eigen_vectors_matrix, 
                                                      k, num_of_vectors);
-    return normalized_eigen_vectors; // T in the algorithm
+    return normalized_eigen_vectors; /* T in the algorithm */
 }
 
 double* transpose_matrix_copy(double** matrix, int rows, int cols)
