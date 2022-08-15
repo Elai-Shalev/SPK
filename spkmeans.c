@@ -130,7 +130,7 @@ double sum_squares_off_diagonal(double* mat, int size){
 }
 
 double* create_initial_p_matrix(i, j, c, s){
-    double* P = (double*)calloc(sizeof(double)*SQR(num_of_vectors));
+    double* P = (double*)calloc(SQR(num_of_vectors), sizeof(double));
     int k;
 
     for (k = 0; k < num_of_vectors; k++){
