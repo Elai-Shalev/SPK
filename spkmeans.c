@@ -64,7 +64,6 @@ double* transpose_matrix_copy(double** matrix, int rows, int cols)
             transposed_matrix[i*rows+j] = matrix[j][i];
         }
     }
-
     return transposed_matrix;
 }
 
