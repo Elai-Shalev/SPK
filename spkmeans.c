@@ -48,7 +48,22 @@ double** convert_double_array_to_matrix(double* array, int size){
 }
 
 void sort_eigen_v(double* eigen_values, double** eigen_vectors){
-    
+    int i, j;
+    double temp_eigenvalue;
+    double* temp_eigenvector;
+
+    for(i = 0; i < num_of_vectors; i++){
+        for (j = i; j < num_of_vectors; j++){
+            if (eigen_values[j] < eigen_values[i]){
+                temp_eigenvalue = eigen_values[i];
+                temp_eigenvector = eigen_vectors[i];
+                eigen_values[i] = eigen_values[j];
+                eigen_vectors[i] = eigen_vectors[j];
+                eigen_values[j] = temp_eigenvalue;
+                eigen_vectors[j] = temp_eigenvector;
+            }
+        }
+    }
 }
 
 double* calc_weighted_matrix(double* points){
