@@ -22,3 +22,5 @@ void rotation_matrix_multiply_simplified(double * mat,
                                          double c, double s);
 double* read_file(char* file_in);
 void print_matrix(double* matrix, char deli, int num_rows, int num_cols);
+void print_double_array(double* arr, char deli, int length);
+void print_matrix_doublestar(double** matrix, char deli, int num_rows, int num_cols);
