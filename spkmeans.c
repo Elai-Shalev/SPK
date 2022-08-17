@@ -476,7 +476,10 @@ int main(int argc, char* argv[]){
     if(strcmp(argv[1],"jacobi") == 0){
         data = calc_eigen(points);
         for(i = 0; i<num_of_vectors; i++){
-            printf("%.4f, ", data[0][i]);
+            printf("%.4f", data[0][i]);
+            if(i!=(num_of_vectors-1)){
+                    printf("%c", ',');
+                }
         }
         printf("\n");
         print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
@@ -494,10 +497,13 @@ int main(int argc, char* argv[]){
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
-                    printf("%.4f ,", diag_deg_matrix[i]);
+                    printf("%.4f", diag_deg_matrix[i]);
                 }
                 else{
-                    printf("0 ,");
+                    printf("0.0000");
+                }
+                if(j!=(num_of_vectors-1)){
+                    printf("%c", ',');
                 }
             }
             printf("\n");
