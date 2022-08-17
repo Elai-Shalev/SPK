@@ -170,7 +170,7 @@ double* calc_weighted_matrix(double* points){
 }
 double euclidian_dist(double* points, int i, int j){
     int k;
-    int sum_diff = 0;
+    double sum_diff = 0;
     for(k=0; k<dim; k++){
         sum_diff += pow((points[dim*i+k] - points[dim*j+k]),2);
     }
@@ -210,7 +210,7 @@ double* calc_lnorm_matrix(double* points){
                                     pow(diagonal_deg_matrix[j], -0.5);
             
             if (i==j){
-                lnorm_matrix[i*num_of_vectors+j] += 1;
+                lnorm_matrix[i*num_of_vectors+j] += 1.0000;
             }
         }
     }
@@ -446,7 +446,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%.4f", matrix[num_rows*i + j]);
+            printf("%.8f", matrix[num_rows*i + j]);
             if(j!=(num_cols-1)){
                 printf("%c", deli);
             }
@@ -474,7 +474,7 @@ int main(int argc, char* argv[]){
     }
     points = read_file(argv[2]);
     if(strcmp(argv[1],"jacobi") == 0){
-        data = calc_eigen(points);
+        data = calc_eigen(calc_lnorm_matrix(points));
         for(i = 0; i<num_of_vectors; i++){
             printf("%.4f", data[0][i]);
             if(i!=(num_of_vectors-1)){
@@ -497,7 +497,7 @@ int main(int argc, char* argv[]){
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
-                    printf("%.4f", diag_deg_matrix[i]);
+                    printf("%.8f", diag_deg_matrix[i]);
                 }
                 else{
                     printf("0.0000");
