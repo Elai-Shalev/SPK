@@ -5,8 +5,8 @@ void normalize_first_k_vectors(double** eigen_vectors_matrix, int k);
 double calc_norma(double* vector, int size);
 int determine_k(double* sorted_eigen_values);
 double** convert_double_array_to_matrix(double* array, 
-                                        int size_row, 
-                                        int num_rows);
+                                        int num_rows,
+                                        int num_cols);
 void sort_eigen_v(double* eigen_values, double** eigen_vectors);
 double* calc_weighted_matrix(double* points);
 double euclidian_dist(double* points, int i, int j);
@@ -23,4 +23,8 @@ void rotation_matrix_multiply_simplified(double * mat,
 double* read_file(char* file_in);
 void print_matrix(double* matrix, char deli, int num_rows, int num_cols);
 void print_double_array(double* arr, char deli, int length);
-void print_matrix_doublestar(double** matrix, char deli, int num_rows, int num_cols);
+void print_matrix_doublestar(double** matrix, char deli, 
+                             int num_rows, int num_cols);
+double* convert_matrix_to_double_array(double** matrix, 
+                                        int new_num_rows, 
+                                        int new_num_cols);

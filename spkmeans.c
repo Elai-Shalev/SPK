@@ -32,7 +32,6 @@ typedef struct {
 } Vector;
 
 double* dimension_reduction_spk(double* points){
-    // DELETE PRINTS!
     double* l_norm; 
     double** data;
     double* eigen_values;
@@ -46,59 +45,27 @@ double* dimension_reduction_spk(double* points){
     eigen_vectors = data[1];
     free(data);
 
-    printf("EigenValues:\n");
-    print_double_array(eigen_values, ',', num_of_vectors);
-    printf("\n");
-
-    printf("EigenVectorMatrix\n");
-    print_matrix(eigen_vectors, ',', num_of_vectors, num_of_vectors);
-    printf("\n");
-
     eigen_vectors_matrix = convert_double_array_to_matrix(
         eigen_vectors,num_of_vectors,num_of_vectors);
 
-    printf("EigenVectorMatrix as doublestar\n");
-    print_matrix_doublestar(eigen_vectors_matrix, ',', num_of_vectors, num_of_vectors);
-    printf("\n");
-
+    transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
+    sort_eigen_v(eigen_values, eigen_vectors_matrix);
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
 
-    printf("Transposed EigenVectorMatrix as doublestar\n");
-    print_matrix_doublestar(eigen_vectors_matrix, ',', num_of_vectors, num_of_vectors);
-    printf("\n");
-
-    sort_eigen_v(eigen_values, eigen_vectors_matrix);
-
-    printf("Sorted EigenValues:\n");
-    print_double_array(eigen_values, ',', num_of_vectors);
-    printf("\n");
-
-    printf("Sorted EigenVectors by values:\n");
-    print_matrix_doublestar(eigen_vectors_matrix, ',', num_of_vectors, num_of_vectors);
-    printf("\n");
-
     k = determine_k(eigen_values);
-
-    printf("k = %d\n", k);
-
     normalize_first_k_vectors(eigen_vectors_matrix, k);
 
-    printf("Normalized Sorted EigenVectors by values:\n");
-    print_matrix_doublestar(eigen_vectors_matrix, ',', num_of_vectors, num_of_vectors);
-    printf("\n");
+    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, k+1);
 
-    normalized_eigen_vectors = transpose_matrix_copy(eigen_vectors_matrix, 
-                                                     k+1, num_of_vectors);
     free(l_norm);
     free(eigen_values);
     free(eigen_vectors);
     free(eigen_vectors_matrix);
-
-    printf("T: \n");
-    print_matrix(normalized_eigen_vectors, ',', num_of_vectors, k+1);
     return normalized_eigen_vectors; /* T in the algorithm */
 }
 
+/*
+DELETE THIS AFTER
 double* transpose_matrix_copy(double** matrix, int rows, int cols)
 {
     double* transposed_matrix;
@@ -106,13 +73,13 @@ double* transpose_matrix_copy(double** matrix, int rows, int cols)
     transposed_matrix = (double*)malloc(sizeof(double)*rows*cols);
     NULL_ERROR_CHECK(transposed_matrix);
 
-    for(i = 0; i < rows; i++){
-        for(j = 0; j < cols; j++){
-            transposed_matrix[i*rows+j] = matrix[j][i];
+    for(i = 0; i < cols; i++){
+        for(j = 0; j < rows; j++){
+            transposed_matrix[i*cols+j] = matrix[i][j];
         }
     }
     return transposed_matrix;
-}
+}*/
 
 void transpose_square_matrix_inplace(double** matrix, int size){
     int i, j;
@@ -129,28 +96,28 @@ void transpose_square_matrix_inplace(double** matrix, int size){
 
 void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
     int i,j;
-    double curr_norma;
-    for(i = 0; i<k+1; i++){
-        curr_norma = calc_norma(eigen_vectors_matrix[i],num_of_vectors);
-        for(j=0; j<k; j++){
+    double curr_norma = 0;
+    for(i = 0; i < num_of_vectors; i++){
+        curr_norma = calc_norma(eigen_vectors_matrix[i], k+1);
+        for(j=0; j < k+1; j++){
             eigen_vectors_matrix[i][j] /= curr_norma;
         }
     }
 }
 
 double calc_norma(double* vector, int size){
-    double sum;
+    double sum = 0;
     int i;
-    for(i=0; i<num_of_vectors; i++){
+    for(i=0; i<size; i++){
         sum += SQR(vector[i]);
     }
-    return sqrt(sum);
+    return pow(sum, 0.5);
 }
 
 int determine_k(double* sorted_eigen_values){
     int i, k;
     double gap, curr_gap;
-    gap = -INFINITY;
+    gap = 0;
     for(i=0; i<(num_of_vectors/2); i++){
         curr_gap = ABS(sorted_eigen_values[i] - sorted_eigen_values[i+1]);
         if(curr_gap > gap){
@@ -162,15 +129,31 @@ int determine_k(double* sorted_eigen_values){
 }
 
 double** convert_double_array_to_matrix(double* array, 
-                                        int size_row, 
-                                        int num_rows){
+                                        int num_rows,
+                                        int num_cols){
     int i;
     double** mat = (double**)malloc(sizeof(double*)*num_rows);
     NULL_ERROR_CHECK(mat);
     for(i=0; i<num_rows; i++){
-        mat[i] = &array[i*size_row];
+        mat[i] = &array[i*num_cols];
     }
     return mat;
+}
+
+double* convert_matrix_to_double_array(double** matrix, 
+                                        int new_num_rows, 
+                                        int new_num_cols){
+    double* array;
+    int i, j;
+    array = (double*)malloc(sizeof(double)*new_num_cols*new_num_rows);
+    NULL_ERROR_CHECK(matrix);
+
+    for(i = 0; i < new_num_rows; i++){
+        for(j = 0; j < new_num_cols; j++){
+            array[i*new_num_rows+j] = matrix[i][j];
+        }
+    }
+    return array;
 }
 
 void sort_eigen_v(double* eigen_values, double** eigen_vectors){
@@ -605,5 +588,3 @@ int main(int argc, char* argv[]){
         free(lnorm);
     }
 }
-
-
