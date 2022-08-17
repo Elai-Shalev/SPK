@@ -450,7 +450,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%.8f", matrix[num_rows*i + j]);
+            printf("%.4f", matrix[num_rows*i + j]);
             if(j!=(num_cols-1)){
                 printf("%c", deli);
             }
@@ -501,7 +501,7 @@ int main(int argc, char* argv[]){
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
-                    printf("%.8f", diag_deg_matrix[i]);
+                    printf("%.4f", diag_deg_matrix[i]);
                 }
                 else{
                     printf("0.0000");
