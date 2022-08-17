@@ -18,6 +18,7 @@ int num_of_vectors;
 
 /* Macros */
 #define SQR(x) ((x)*(x))
+#define ABS(x) ((x<0)?-x:x)
 #define NULL_ERROR_CHECK(x) {\
     if(x == NULL){\
         printf("An Error Has Occurred");\
@@ -106,7 +107,7 @@ int determine_k(double* sorted_eigen_values){
     double gap, curr_gap;
     gap = INFINITY*-1;
     for(i=0; i<num_of_vectors-1; i++){
-        curr_gap = abs(sorted_eigen_values[i] - sorted_eigen_values[i-1]);
+        curr_gap = ABS(sorted_eigen_values[i] - sorted_eigen_values[i-1]);
         if(curr_gap > gap){
             gap = curr_gap;
             k=i;
@@ -221,6 +222,7 @@ double* calc_lnorm_matrix(double* points){
 
 int* max_abs_off_diagonal_entry(double* mat, int size){
     int* data = (int*)malloc(sizeof(int)*2);
+    double currmax, currnum;
     NULL_ERROR_CHECK(data);
     int i, j;
 
@@ -229,8 +231,9 @@ int* max_abs_off_diagonal_entry(double* mat, int size){
 
     for (i = 0; i < size; i++){
         for (j = 0; j < size; j++){
-            if ((i != j) &&
-                (abs(mat[(data[0])*size+(data[1])]) < abs(mat[i*size+j]))){
+            currmax = ABS(mat[(data[0])*size+(data[1])]);
+            currnum = ABS(mat[i*size+j]);
+            if ((i != j) && (currmax < currnum)){
                 data[0] = i;
                 data[1] = j;
             }
@@ -311,8 +314,10 @@ double** calc_eigen(double* A){
                 temp_rj = A[r*num_of_vectors+max_j];
 
                 A[r*num_of_vectors+max_i] = c*temp_ri - s*temp_rj;
+                A[max_i*num_of_vectors+r] = c*temp_ri - s*temp_rj;
 
                 A[r*num_of_vectors+max_j] = c*temp_rj + s*temp_ri;
+                A[max_j*num_of_vectors+r] = c*temp_rj + s*temp_ri;
             }
         }
 
@@ -335,7 +340,7 @@ double** calc_eigen(double* A){
         sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
         iteration++;
     }
-    while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) && 
+    while((ABS(sum_A_squared - sum_A_next_squared) > JACOBIAN_EPSILON) && 
     (iteration < JACOBIAN_MAX_ITER));
 
     for (i = 0; i < num_of_vectors; i++){
@@ -361,7 +366,7 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     else{
         sign = 1;
     }
-    t = sign / (abs(theta)+ sqrt(SQR(theta)+1));
+    t = sign / (ABS(theta)+ sqrt(SQR(theta)+1));
     c = 1 / (sqrt(SQR(t)+1));
     s = t*c;
     double * return_vals = (double*)malloc(2*sizeof(double));
@@ -478,7 +483,8 @@ int main(int argc, char* argv[]){
     }
     points = read_file(argv[2]);
     if(strcmp(argv[1],"jacobi") == 0){
-        data = calc_eigen(calc_lnorm_matrix(points));
+        lnorm = calc_lnorm_matrix(points);
+        data = calc_eigen(lnorm);
         for(i = 0; i<num_of_vectors; i++){
             printf("%.4f", data[0][i]);
             if(i!=(num_of_vectors-1)){
@@ -488,16 +494,18 @@ int main(int argc, char* argv[]){
         printf("\n");
         print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
         free(data);
+        free(lnorm);
     }
 
     if(strcmp(argv[1], "wam") == 0){
         weighted_matrix = calc_weighted_matrix(points);
         print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
+        free(weighted_matrix);
     }
 
     if(strcmp(argv[1],"ddg") == 0){
-        diag_deg_matrix = 
-        calc_diagonal_deg_matrix(calc_weighted_matrix(points));
+        weighted_matrix = calc_weighted_matrix(points);
+        diag_deg_matrix = calc_diagonal_deg_matrix(weighted_matrix);
         for(i=0; i<num_of_vectors; i++){
             for(j=0; j<num_of_vectors; j++){
                 if(i==j){
@@ -512,11 +520,14 @@ int main(int argc, char* argv[]){
             }
             printf("\n");
         }
+        free(weighted_matrix);
+        free(diag_deg_matrix);
     }
 
     if(strcmp(argv[1],"lnorm") == 0){
         lnorm = calc_lnorm_matrix(points);
         print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
+        free(lnorm);
     }
 }
 
