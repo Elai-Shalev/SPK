@@ -280,6 +280,7 @@ double** calc_eigen(double* A){
     double* V;
     int* data;
     double c, s, sum_A_squared, sum_A_next_squared;
+    double temp_ii, temp_ij, temp_jj, temp_ri, temp_rj;
     int max_i, max_j, r, l, i;
     int iteration = 1;
 
@@ -299,27 +300,30 @@ double** calc_eigen(double* A){
         free(P);
 
         sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
+
+        temp_ii = A[max_i*num_of_vectors+max_i];
+        temp_ij = A[max_i*num_of_vectors+max_j];
+        temp_jj = A[max_j*num_of_vectors+max_j];
         
         for (r = 0; r < num_of_vectors; r++){
             if ((r != max_i) && (r != max_j)){
-                A[r*num_of_vectors+max_i] = c*A[r*num_of_vectors+max_i]-
-                                                s*A[r*num_of_vectors+max_j];
+                temp_ri = A[r*num_of_vectors+max_i];
+                temp_rj = A[r*num_of_vectors+max_j];
 
-                A[r*num_of_vectors+max_j] = c*A[r*num_of_vectors+max_j]+
-                                                s*A[r*num_of_vectors+max_i];
+                A[r*num_of_vectors+max_i] = c*temp_ri - s*temp_rj;
+
+                A[r*num_of_vectors+max_j] = c*temp_rj + s*temp_ri;
             }
         }
+
         A[max_i*num_of_vectors+max_i] = 
-                SQR(c)*A[max_i*num_of_vectors+max_i]+
-                SQR(s)*A[max_j*num_of_vectors+max_j]-
-                2*s*c*A[max_i*num_of_vectors+max_j];
+                SQR(c)*temp_ii + SQR(s)*temp_jj - 2*s*c*temp_ij;
 
         A[max_j*num_of_vectors+max_j] = 
-                SQR(s)*A[max_i*num_of_vectors+max_i]+
-                SQR(c)*A[max_j*num_of_vectors+max_j]+
-                2*s*c*A[max_i*num_of_vectors+max_j];
+                SQR(s)*temp_ii + SQR(c)*temp_jj + 2*s*c*temp_ij;
 
         A[max_i*num_of_vectors+max_j] = 0;
+        A[max_j*num_of_vectors+max_i] = 0;
 
         if (iteration == 1){
             V = create_initial_p_matrix(max_i, max_j, c, s);
@@ -331,7 +335,7 @@ double** calc_eigen(double* A){
         sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
         iteration++;
     }
-    while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) || 
+    while((sum_A_squared - sum_A_next_squared > JACOBIAN_EPSILON) && 
     (iteration < JACOBIAN_MAX_ITER));
 
     for (i = 0; i < num_of_vectors; i++){
