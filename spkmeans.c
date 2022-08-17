@@ -179,7 +179,7 @@ double euclidian_dist(double* points, int i, int j){
 
 double* calc_diagonal_deg_matrix(double* mat){
     int z,i;
-    int sum_row;
+    double sum_row=0;
     double* diagonal_deg_matrix = 
     (double*)malloc(sizeof(double)*num_of_vectors);
     NULL_ERROR_CHECK(diagonal_deg_matrix);
