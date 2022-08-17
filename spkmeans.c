@@ -446,7 +446,10 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%.4f%c", matrix[num_rows*i + j], deli);
+            printf("%.4f", matrix[num_rows*i + j]);
+            if(j!=(num_cols-1)){
+                printf("%c", deli);
+            }
         }
         printf("\n");
     }
