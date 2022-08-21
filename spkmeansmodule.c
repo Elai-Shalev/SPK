@@ -1,10 +1,10 @@
 #include "spkmeans.h"
 
 static PyObject* kmpp_capi(PyObject *self, PyObject *args);
-static void wam_capi(PyObject *self, PyObject *args);
-static void ddg_capi(PyObject *self, PyObject *args);
-static void lnorm_capi(PyObject *self, PyObject *args);
-static void jacobi_capi(PyObject *self, PyObject *args);
+static PyObject* wam_capi(PyObject *self, PyObject *args);
+static PyObject* ddg_capi(PyObject *self, PyObject *args);
+static PyObject* lnorm_capi(PyObject *self, PyObject *args);
+static PyObject* jacobi_capi(PyObject *self, PyObject *args);
 static PyObject* dmr_capi(PyObject *self, PyObject *args);
 static PyObject* get_K(PyObject *self, PyObject *args);
 
@@ -96,8 +96,9 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     return Py_BuildValue("O", python_list_result);
 }
 
-static void wam_capi(PyObject *self, PyObject *args)
+static PyObject* wam_capi(PyObject *self, PyObject *args)
 {
+    PyObject* temp = NULL;
     PyObject* python_filename;
     double* points;
     
@@ -108,10 +109,12 @@ static void wam_capi(PyObject *self, PyObject *args)
     points = read_file(python_filename);
     wam_c(points);
     free(points);
+    return temp;
 }
 
-static void ddg_capi(PyObject *self, PyObject *args)
+static PyObject* ddg_capi(PyObject *self, PyObject *args)
 {
+    PyObject* temp = NULL;
     PyObject* python_filename;
     double* points;
     
@@ -122,10 +125,12 @@ static void ddg_capi(PyObject *self, PyObject *args)
     points = read_file(python_filename);
     ddg_c(points);
     free(points);
+    return temp;
 }
 
-static void lnorm_capi(PyObject *self, PyObject *args)
+static PyObject* lnorm_capi(PyObject *self, PyObject *args)
 {
+    PyObject* temp = NULL;
     PyObject* python_filename;
     double* points;
     
@@ -136,10 +141,12 @@ static void lnorm_capi(PyObject *self, PyObject *args)
     points = read_file(python_filename);
     lnorm_c(points);
     free(points);
+    return temp;
 }
 
-static void jacobi_capi(PyObject *self, PyObject *args)
+static PyObject* jacobi_capi(PyObject *self, PyObject *args)
 {
+    PyObject* temp = NULL;
     PyObject* python_filename;
     double* points;
     
@@ -150,6 +157,7 @@ static void jacobi_capi(PyObject *self, PyObject *args)
     points = read_file(python_filename);
     jacobi_c(points);
     free(points);
+    return temp;
 }
 
 static PyObject* dmr_capi(PyObject *self, PyObject *args)
