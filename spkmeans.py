@@ -4,14 +4,13 @@ import pandas as pd
 import numpy as np
 
 
-def initialize_centroids(vector_dataframe, K):
+def initialize_centroids(vectors, K):
     # Set random seed as 0 as specified in requirements
     np.random.seed(0)
     
     # Initialize centroid and centroid indices lists
     centroids = [0]*K
     centroids_indices = [0]*K
-    vectors = vector_dataframe.to_numpy()
 
     # Randomly select first initial centroid
     centroids_indices[0] = np.random.choice(len(vectors))
@@ -45,10 +44,9 @@ def initialize_centroids(vector_dataframe, K):
     return centroids_indices, centroids
     
 
-def run_kmeans(K, EPSILON, max_iter, vector_dataframe):
+def run_kmeans(K, EPSILON, max_iter, vector_data):
     # Sort dataframe and calculate initial centroids
-    vector_dataframe.sort_index(inplace=True)
-    centroids_indices, centroids = initialize_centroids(vector_dataframe, K)
+    centroids_indices, centroids = initialize_centroids(vector_data, K)
     centroids = list(np.array(centroids).flatten())
 
     vector_dataframe = vector_dataframe.to_numpy()
@@ -61,14 +59,9 @@ def run_kmeans(K, EPSILON, max_iter, vector_dataframe):
     return centroids_indices, new_centroids
 
 
-def dimension_reduction(vector_dataframe, K):
-    pass
-
-
-def read_data(file_name):
-    # Read data from input files
-    vector_dataframe = pd.read_csv(file_name, header=None).set_index(0)
-    return vector_dataframe
+def dimension_reduction(file_name, K):
+    vectors_list = spkm.reduce(file_name, K)
+    return vectors_list
 
 
 if __name__ == '__main__':    
@@ -91,9 +84,10 @@ if __name__ == '__main__':
         operation = sys.argv[2]
         file_name = sys.argv[3]
 
-        vector_dataframe = read_data(file_name)
         if operation == "spk":
-            reduced_data, K = dimension_reduction(vector_dataframe, K)
+            reduced_data = dimension_reduction(file_name, K)
+            K = int(spkm.get_K()[0])
+            vector_data = np.array(reduced_data).reshape((len(reduced_data)//K, K))
             initial_centroid_indices, centroids = run_kmeans(K, EPSILON, max_iter, reduced_data)
 
             if initial_centroid_indices is not None:
@@ -102,13 +96,13 @@ if __name__ == '__main__':
                     print(','.join(["%.4f" % i for i in vec]))
 
         elif operation == "wam":
-            spkm.wam(file_name,K)
+            spkm.wam(file_name, K)
         elif operation == "ddg":
-            pass
+            spkm.ddg(file_name, K)
         elif operation == "lnorm":
-            pass
+            spkm.lnorm(file_name, K)
         elif operation == "jacobi":
-            pass 
+            spkm.jacobi(file_name, K)
 
     except Exception:
         print('An Error Has Occurred')

@@ -5,7 +5,8 @@ static PyObject* wam_capi(PyObject *self, PyObject *args);
 static PyObject* ddg_capi(PyObject *self, PyObject *args);
 static PyObject* lnorm_capi(PyObject *self, PyObject *args);
 static PyObject* jacobi_capi(PyObject *self, PyObject *args);
-static PyObject* spk_capi(PyObject *self, PyObject *args);
+static PyObject* dmr_capi(PyObject *self, PyObject *args);
+static PyObject* get_K(PyObject *self, PyObject *args);
 
 double* python_list_to_c_array(PyObject* float_list){
     double* double_arr;
@@ -107,6 +108,7 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
 
     points = read_file(python_filename);
     wam_c(points);
+    free(points);
     return temp;
 }
 
@@ -122,6 +124,7 @@ static PyObject* ddg_capi(PyObject *self, PyObject *args)
 
     points = read_file(python_filename);
     ddg_c(points);
+    free(points);
     return temp;
 }
 
@@ -137,6 +140,7 @@ static PyObject* lnorm_capi(PyObject *self, PyObject *args)
 
     points = read_file(python_filename);
     lnorm_c(points);
+    free(points);
     return temp;
 }
 
@@ -152,13 +156,37 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
 
     points = read_file(python_filename);
     jacobi_c(points);
+    free(points);
     return temp;
 }
 
-static PyObject* spk_capi(PyObject *self, PyObject *args)
+static PyObject* dmr_capi(PyObject *self, PyObject *args)
 {
-    PyObject* temp;
-    return temp;
+    PyObject* python_list_result;
+    PyObject* python_filename;
+    double* points;
+    double* reduced;
+    
+    if (!PyArg_ParseTuple(args, "si", &python_filename, &K)){
+        return NULL;
+    }
+
+    points = read_file(python_filename);
+    reduced = dimension_reduction_spk(points);
+    python_list_result = c_array_to_python_list(reduced);
+
+    free(points);
+    return Py_BuildValue("O", python_list_result);
+}
+
+static PyObject* get_K(PyObject *self, PyObject *args)
+{
+    PyObject* python_list_result;
+    double* currK = (double*)malloc(sizeof(double));
+    currK[0] = (double)K;
+    python_list_result = c_array_to_python_list(currK);
+
+    return Py_BuildValue("O", python_list_result);
 }
 
 static PyMethodDef capiMethods[] = {
@@ -171,6 +199,31 @@ static PyMethodDef capiMethods[] = {
         (PyCFunction) wam_capi,
         METH_VARARGS,
         PyDoc_STR("Runs WAM")
+    },
+    {"ddg", 
+        (PyCFunction) ddg_capi,
+        METH_VARARGS,
+        PyDoc_STR("Runs DDG")
+    },
+    {"lnorm", 
+        (PyCFunction) lnorm_capi,
+        METH_VARARGS,
+        PyDoc_STR("Runs LNORM")
+    },
+    {"jacobi", 
+        (PyCFunction) jacobi_capi,
+        METH_VARARGS,
+        PyDoc_STR("Runs JACOBI")
+    },
+    {"reduce", 
+        (PyCFunction) dmr_capi,
+        METH_VARARGS,
+        PyDoc_STR("Runs Dimensionality Reduction")
+    },
+    {"get_K", 
+        (PyCFunction) get_K,
+        METH_VARARGS,
+        PyDoc_STR("Gets K")
     },
     {NULL, NULL, 0, NULL}
 };

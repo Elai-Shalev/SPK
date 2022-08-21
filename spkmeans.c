@@ -12,7 +12,6 @@ double* dimension_reduction_spk(double* points){
     double* eigen_vectors;
     double** eigen_vectors_matrix;
     double* normalized_eigen_vectors;
-    int k;
     l_norm = calc_lnorm_matrix(points);
     data = calc_eigen(l_norm);
     eigen_values = data[0];
@@ -26,10 +25,13 @@ double* dimension_reduction_spk(double* points){
     sort_eigen_v(eigen_values, eigen_vectors_matrix);
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
 
-    k = determine_k(eigen_values);
-    normalize_first_k_vectors(eigen_vectors_matrix, k);
+    if (K == 0){
+        K = determine_k(eigen_values);
+    }
+        
+    normalize_first_k_vectors(eigen_vectors_matrix, K);
 
-    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, k+1);
+    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K+1);
 
     free(l_norm);
     free(eigen_values);
@@ -581,6 +583,7 @@ int main(int argc, char* argv[]){
         lnorm = dimension_reduction_spk(points);
         free(lnorm);
     }
+    free(points);
 }
 
 
