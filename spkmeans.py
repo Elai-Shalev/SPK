@@ -103,6 +103,9 @@ if __name__ == '__main__':
             spkm.lnorm(file_name, K)
         elif operation == "jacobi":
             spkm.jacobi(file_name, K)
+        else:
+            print('Invalid Input!')
+            quit()
 
     except Exception:
         print('An Error Has Occurred')
