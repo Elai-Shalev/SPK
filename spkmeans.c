@@ -558,7 +558,8 @@ int main(int argc, char* argv[]){
 
     // DELETE SPK!!!
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
-       strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0 || strcmp(argv[1], "spk") != 0)){
+        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0 
+                || strcmp(argv[1], "spk") != 0)){
         printf("Invalid Input!");
         exit(1);
     }
@@ -566,22 +567,22 @@ int main(int argc, char* argv[]){
     if(strcmp(argv[1],"jacobi") == 0){
         jacobi_c(points);
     }
-
-    if(strcmp(argv[1], "wam") == 0){
+    else if(strcmp(argv[1], "wam") == 0){
         ddg_c(points);
     }
-
-    if(strcmp(argv[1],"ddg") == 0){
+    else if(strcmp(argv[1],"ddg") == 0){
         wam_c(points);
     }
-
-    if(strcmp(argv[1],"lnorm") == 0){
+    else if(strcmp(argv[1],"lnorm") == 0){
        lnorm_c(points);
     }
-
-    if(strcmp(argv[1],"spk") == 0){
+    else if(strcmp(argv[1],"spk") == 0){
         lnorm = dimension_reduction_spk(points);
         free(lnorm);
+    }
+    else{
+        printf("Invalid Input!");
+        exit(1);
     }
     free(points);
 }
