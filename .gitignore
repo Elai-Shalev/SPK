@@ -1,2 +1,4 @@
 .vscode/tasks.json
 .vscode/c_cpp_properties.json
+build/*
+spkmeansmodule.cp39-win_amd64.pyd

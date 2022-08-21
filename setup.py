@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages, Extension
 
 setup(
-    name='myspkmeans',
+    name='spkmeansmodule',
     version='0.1.0',
     author="ElaiAndIdo",
     author_email="ido.meshulam@mail.tau.ac.il",
@@ -19,8 +19,8 @@ setup(
     ],
     ext_modules=[
         Extension(
-            'myspkmeans',
-            ['spkmeansmodule.c'],
+            'spkmeansmodule',
+            ['spkmeans.c', 'spkmeansmodule.c'],
         ),
     ]
 )

@@ -1,5 +1,5 @@
 import sys
-# import mykmeanssp as kms
+import spkmeansmodule as spkm
 import pandas as pd
 import numpy as np
 
@@ -57,7 +57,7 @@ def run_kmeans(K, EPSILON, max_iter, vector_dataframe):
 
     vector_dataframe = list(vector_dataframe.flatten())
     # Run C library's kms.fit
-    new_centroids = kms.fit(vector_dataframe, centroids, number_of_vectors, dimension, K, max_iter, float(EPSILON))
+    new_centroids = spkm.fit(vector_dataframe, centroids, number_of_vectors, dimension, K, max_iter, float(EPSILON))
     return centroids_indices, new_centroids
 
 
@@ -67,13 +67,7 @@ def dimension_reduction(vector_dataframe, K):
 
 def read_data(file_name):
     # Read data from input files
-    f1 = open(file_name)
-    x = f1.readline()
-    if x == '' or y == '':
-        return None, None
-    
     vector_dataframe = pd.read_csv(file_name, header=None).set_index(0)
-    f1.close()
     return vector_dataframe
 
 

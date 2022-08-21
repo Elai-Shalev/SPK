@@ -2,28 +2,8 @@
 
 
 /* Global Variables */
-int MAX_ITER;
-int K;
-double const EPSILON;
 double const JACOBIAN_EPSILON = 0.00001;
 int const JACOBIAN_MAX_ITER = 100;
-int dim;
-int num_of_vectors;
-
-/* Macros */
-#define SQR(x) ((x)*(x))
-#define ABS(x) ((x<0)?-x:x)
-#define NULL_ERROR_CHECK(x) {\
-    if(x == NULL){\
-        printf("An Error Has Occurred");\
-        exit(1);\
-    }}
-
-/* Structs */
-typedef struct {
-    double* coordinate;
-    int cluster;
-} Vector;
 
 double* dimension_reduction_spk(double* points){
     double* l_norm; 
@@ -510,6 +490,13 @@ void print_double_array(double* arr, char deli, int length){
     }
 }
 
+void wam_c(double* points){
+    double* weighted_matrix;
+    weighted_matrix = calc_weighted_matrix(points);
+    print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
+    free(weighted_matrix);
+}
+
 int main(int argc, char* argv[]){
     int i, j;
     double* points;
@@ -545,9 +532,7 @@ int main(int argc, char* argv[]){
     }
 
     if(strcmp(argv[1], "wam") == 0){
-        weighted_matrix = calc_weighted_matrix(points);
-        print_matrix(weighted_matrix, ',', num_of_vectors, num_of_vectors);
-        free(weighted_matrix);
+        wam_c(points);
     }
 
     if(strcmp(argv[1],"ddg") == 0){
@@ -784,93 +769,4 @@ Vector** fit_c(double* vector_array, double* centroid_array){
     free(vector_list);
 
     return centroid_list;
-}
-
-
-double* python_list_to_c_array(PyObject* float_list){
-    double* double_arr;
-    int pr_length;
-    int index;
-    PyObject *item;
-
-    pr_length = PyObject_Length(float_list);
-    if (pr_length < 0)
-        return NULL;
-
-    double_arr = (double *) malloc(sizeof(double *) * pr_length);
-    if(double_arr == NULL){
-        printf("An Error Has Occurred");
-        exit(1);
-    }
-
-    if (double_arr == NULL)
-        return NULL;
-    for (index = 0; index < pr_length; index++) {
-        item = PyList_GetItem(float_list, index);
-        if (!PyFloat_Check(item))
-            double_arr[index] = 0.0;
-        double_arr[index] = PyFloat_AsDouble(item);
-    }
-
-    return double_arr;
-}
-
-
-PyObject* c_array_to_python_list(double* float_list){
-    PyObject* python_list = PyList_New(K);
-    PyObject* temp_list;
-    int i, j;
-    PyObject* temp_float;
-
-    for(i = 0; i < K; i++){
-        temp_list = PyList_New(dim);
-        for(j = 0; j < dim; j++){
-            temp_float = PyFloat_FromDouble(float_list[i*dim + j]);
-            PyList_SetItem(temp_list, j, temp_float);
-        }
-        PyList_SetItem(python_list, i, temp_list);
-    }
-    free(float_list);
-    return python_list;
-}
-
-
-static PyObject* fit_capi(PyObject *self, PyObject *args)
-{
-    PyObject* vector_float_list;
-    PyObject* centroid_float_list;
-    PyObject* python_list_result;
-    double* vector_list;
-    double* centroid_list;
-    double* centroid_flattened_list;
-    Vector** k_means_result;
-    int i, j, idx;
-
-    if (!PyArg_ParseTuple(args, "OOiiiiO", &vector_float_list, &centroid_float_list, &num_of_vectors, &dim, &K, &MAX_ITER, &EPSILON)){
-        return NULL;
-    }
-
-    vector_list = python_list_to_c_array(vector_float_list);
-    centroid_list = python_list_to_c_array(centroid_float_list);
-    k_means_result = fit_c(vector_list, centroid_list);
-
-    centroid_flattened_list = (double *) malloc(sizeof(double *) * K * dim);
-    if(centroid_float_list == NULL){
-        printf("An Error Has Occurred");
-        exit(1);
-    }
-
-    idx = 0;
-    for(i = 0; i < K; i++){
-        for(j = 0; j < dim; j++){
-            centroid_flattened_list[idx] = (k_means_result[i] -> coordinate)[j];
-            idx++;
-        }
-    }
-
-    python_list_result = c_array_to_python_list(centroid_flattened_list);
-
-    free(k_means_result);
-    
-    return Py_BuildValue("O", python_list_result);
 }
