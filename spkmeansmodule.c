@@ -113,18 +113,45 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
 static PyObject* ddg_capi(PyObject *self, PyObject *args)
 {
     PyObject* temp;
+    PyObject* python_filename;
+    double* points;
+    
+    if (!PyArg_ParseTuple(args, "si", &python_filename, &K)){
+        return NULL;
+    }
+
+    points = read_file(python_filename);
+    ddg_c(points);
     return temp;
 }
 
 static PyObject* lnorm_capi(PyObject *self, PyObject *args)
 {
     PyObject* temp;
+    PyObject* python_filename;
+    double* points;
+    
+    if (!PyArg_ParseTuple(args, "si", &python_filename, &K)){
+        return NULL;
+    }
+
+    points = read_file(python_filename);
+    lnorm_c(points);
     return temp;
 }
 
 static PyObject* jacobi_capi(PyObject *self, PyObject *args)
 {
     PyObject* temp;
+    PyObject* python_filename;
+    double* points;
+    
+    if (!PyArg_ParseTuple(args, "si", &python_filename, &K)){
+        return NULL;
+    }
+
+    points = read_file(python_filename);
+    jacobi_c(points);
     return temp;
 }
 

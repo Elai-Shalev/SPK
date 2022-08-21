@@ -497,12 +497,57 @@ void wam_c(double* points){
     free(weighted_matrix);
 }
 
-int main(int argc, char* argv[]){
-    int i, j;
-    double* points;
-    double** data;
-    double* weighted_matrix;
+void ddg_c(double* points){
     double* diag_deg_matrix;
+    double* weighted_matrix;
+    int i,j;
+    weighted_matrix = calc_weighted_matrix(points);
+    diag_deg_matrix = calc_diagonal_deg_matrix(weighted_matrix);
+    for(i=0; i<num_of_vectors; i++){
+        for(j=0; j<num_of_vectors; j++){
+            if(i==j){
+                printf("%.4f", diag_deg_matrix[i]);
+            }
+            else{
+                printf("0.0000");
+            }
+            if(j!=(num_of_vectors-1)){
+                printf("%c", ',');
+            }
+        }
+        printf("\n");
+    }
+    free(weighted_matrix);
+    free(diag_deg_matrix);
+}
+
+void lnorm_c(double* points){
+    double* lnorm;
+    lnorm = calc_lnorm_matrix(points);
+    print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
+    free(lnorm);
+}
+
+void jacobi_c(double* points){
+    double* lnorm;
+    double** data;
+    int i;
+    lnorm = calc_lnorm_matrix(points);
+    data = calc_eigen(lnorm);
+    for(i = 0; i<num_of_vectors; i++){
+        printf("%.4f", data[0][i]);
+        if(i!=(num_of_vectors-1)){
+                printf("%c", ',');
+            }
+    }
+    printf("\n");
+    print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
+    free(data);
+    free(lnorm);
+}
+
+int main(int argc, char* argv[]){
+    double* points;
     double* lnorm;
     if(argc != 3){
         printf("Invalid Input!");
@@ -517,49 +562,19 @@ int main(int argc, char* argv[]){
     }
     points = read_file(argv[2]);
     if(strcmp(argv[1],"jacobi") == 0){
-        lnorm = calc_lnorm_matrix(points);
-        data = calc_eigen(lnorm);
-        for(i = 0; i<num_of_vectors; i++){
-            printf("%.4f", data[0][i]);
-            if(i!=(num_of_vectors-1)){
-                    printf("%c", ',');
-                }
-        }
-        printf("\n");
-        print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
-        free(data);
-        free(lnorm);
+        jacobi_c(points);
     }
 
     if(strcmp(argv[1], "wam") == 0){
-        wam_c(points);
+        ddg_c(points);
     }
 
     if(strcmp(argv[1],"ddg") == 0){
-        weighted_matrix = calc_weighted_matrix(points);
-        diag_deg_matrix = calc_diagonal_deg_matrix(weighted_matrix);
-        for(i=0; i<num_of_vectors; i++){
-            for(j=0; j<num_of_vectors; j++){
-                if(i==j){
-                    printf("%.4f", diag_deg_matrix[i]);
-                }
-                else{
-                    printf("0.0000");
-                }
-                if(j!=(num_of_vectors-1)){
-                    printf("%c", ',');
-                }
-            }
-            printf("\n");
-        }
-        free(weighted_matrix);
-        free(diag_deg_matrix);
+        wam_c(points);
     }
 
     if(strcmp(argv[1],"lnorm") == 0){
-        lnorm = calc_lnorm_matrix(points);
-        print_matrix(lnorm, ',', num_of_vectors, num_of_vectors);
-        free(lnorm);
+       lnorm_c(points);
     }
 
     if(strcmp(argv[1],"spk") == 0){
