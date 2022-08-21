@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "stdlib.h": "c",
-        "stdio.h": "c",
-        "spkmeans.h": "c",
-        "string.h": "c",
-        "python.h": "c"
-    }
-}
