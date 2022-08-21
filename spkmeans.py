@@ -75,7 +75,6 @@ if __name__ == '__main__':
     try:
         max_iter = 300
         EPSILON = 0
-        
         if len(sys.argv) != 4:
             print('Invalid Input!')
             quit()
@@ -103,7 +102,7 @@ if __name__ == '__main__':
                     print(','.join(["%.4f" % i for i in vec]))
 
         elif operation == "wam":
-            pass
+            spkm.wam(file_name,K)
         elif operation == "ddg":
             pass
         elif operation == "lnorm":
