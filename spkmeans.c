@@ -1,9 +1,3 @@
-#define PY_SSIZE_T_CLEAN
-// include "Python.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include "spkmeans.h"
 
 
@@ -587,4 +581,296 @@ int main(int argc, char* argv[]){
         lnorm = dimension_reduction_spk(points);
         free(lnorm);
     }
+}
+
+
+double square_distance(Vector* vec1, Vector* vec2){
+    double sum_of_squares = 0;
+    int i;
+
+    for (i = 0; i < dim; i++){
+        sum_of_squares += SQR(((vec1->coordinate)[i]) - ((vec2->coordinate)[i]));  
+    }
+    
+    return sum_of_squares;
+}
+
+
+void assign_to_nearest_cluster(Vector* vec, Vector** centroids){
+    double min_distance;
+    int min_cluster = -1;
+    double distance_from_cluster;
+    int i;
+    
+    for(i = 0; i < K; i++){
+        distance_from_cluster = square_distance(vec, centroids[i]);
+        if (i == 0 || (distance_from_cluster < min_distance)){
+            min_distance = distance_from_cluster;
+            min_cluster = i;
+        }
+    }
+
+    (vec->cluster) = min_cluster;
+    return;
+}
+
+
+Vector* new_zero_vector(){
+    Vector* v = (Vector*)malloc(sizeof(Vector));
+    double* vec_coordinates;
+
+    if(v==NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+    vec_coordinates = (double*)calloc(dim, sizeof(double));
+    if(vec_coordinates == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+    v->coordinate = vec_coordinates;
+    v->cluster = -1;
+    return v;
+}
+
+
+Vector* new_deep_copy_vector(Vector* vec){
+    int i;
+    Vector* new_vec = new_zero_vector();
+
+    for(i = 0; i < dim; i++){
+        (new_vec->coordinate[i]) = (vec->coordinate[i]);
+    }
+    new_vec->cluster = vec->cluster;
+
+    return new_vec;
+}
+
+
+void vectoric_sum(Vector* vec1, Vector* vec2){
+    int i;
+
+    for(i = 0; i < dim; i++){
+        (vec1->coordinate[i]) += (vec2->coordinate[i]);
+    }
+
+    return;
+}
+
+
+void divide_vector(Vector* vec, int divisor){
+    int i;
+
+    for(i = 0; i < dim; i++){
+        (vec->coordinate[i]) /= ((float)divisor);
+    }
+
+    return;
+}
+
+
+int update_centroids(Vector** vector_list, Vector** centroids){
+    int i, j;
+    int returnValue = 1;
+    Vector** cluster_sums;
+    int* cluster_sizes;
+
+    cluster_sums = (Vector**)malloc(K*sizeof(Vector*));
+    if(cluster_sums == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+
+    cluster_sizes = (int*)malloc(K*sizeof(int));
+    if(cluster_sizes == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+
+    for(i = 0; i < K; i++){
+        cluster_sums[i] = new_zero_vector();
+        cluster_sizes[i] = 0;
+    }
+
+    for(i = 0; i < num_of_vectors; i++){
+        vectoric_sum(cluster_sums[vector_list[i]->cluster], vector_list[i]);
+        cluster_sizes[vector_list[i]->cluster]++;
+    }
+
+    for(i = 0; i < K; i++){
+        divide_vector(cluster_sums[i], cluster_sizes[i]);
+        if (sqrt(square_distance(centroids[i], cluster_sums[i])) >= EPSILON){
+            returnValue = 0;
+        }
+        for(j = 0; j < dim; j++){
+            (centroids[i]->coordinate[j]) = (cluster_sums[i]->coordinate[j]);
+        }
+    }
+
+    free(cluster_sums);
+    free(cluster_sizes);
+    return returnValue;
+}
+
+
+void run_kmeans(Vector** vectors, Vector** centroids){
+    int i;
+    int is_converged = 0;
+    int iter_count = 0;
+
+    while((is_converged == 0) && (iter_count < MAX_ITER)){
+        for(i = 0; i < num_of_vectors; i++){
+            assign_to_nearest_cluster(vectors[i], centroids);
+        }
+
+        is_converged = update_centroids(vectors, centroids);
+        iter_count++;
+    }
+
+    return;
+}
+
+
+Vector** double_array_to_vector_array(double* vector_array){
+    int vec_idx;
+    Vector* v;
+    Vector** vectors;
+    double* vec_coordinates;
+    int vector_array_idx = 0;
+    int dim_idx;
+
+    vectors = (Vector**)malloc(num_of_vectors*(sizeof(Vector*)));
+    if(vectors == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+
+    for(vec_idx = 0; vec_idx < num_of_vectors; vec_idx++){
+        v = (Vector*)malloc(sizeof(Vector));
+        if(v == NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+        }
+
+        vec_coordinates = (double*)malloc(dim*sizeof(double));
+        if(vec_coordinates == NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+        }
+
+        for(dim_idx = 0; dim_idx < dim; dim_idx++){
+            vec_coordinates[dim_idx] = vector_array[vector_array_idx];
+            vector_array_idx++;
+        }
+        
+        v -> coordinate = vec_coordinates;
+        v -> cluster = -1;
+        vectors[vec_idx] = v;
+    }
+
+    free(vector_array);
+    return vectors;
+}
+
+
+Vector** fit_c(double* vector_array, double* centroid_array){
+    Vector** vector_list;
+    Vector** centroid_list;
+
+    vector_list = double_array_to_vector_array(vector_array);
+    centroid_list = double_array_to_vector_array(centroid_array);
+
+    run_kmeans(vector_list, centroid_list);
+    free(vector_list);
+
+    return centroid_list;
+}
+
+
+double* python_list_to_c_array(PyObject* float_list){
+    double* double_arr;
+    int pr_length;
+    int index;
+    PyObject *item;
+
+    pr_length = PyObject_Length(float_list);
+    if (pr_length < 0)
+        return NULL;
+
+    double_arr = (double *) malloc(sizeof(double *) * pr_length);
+    if(double_arr == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+
+    if (double_arr == NULL)
+        return NULL;
+    for (index = 0; index < pr_length; index++) {
+        item = PyList_GetItem(float_list, index);
+        if (!PyFloat_Check(item))
+            double_arr[index] = 0.0;
+        double_arr[index] = PyFloat_AsDouble(item);
+    }
+
+    return double_arr;
+}
+
+
+PyObject* c_array_to_python_list(double* float_list){
+    PyObject* python_list = PyList_New(K);
+    PyObject* temp_list;
+    int i, j;
+    PyObject* temp_float;
+
+    for(i = 0; i < K; i++){
+        temp_list = PyList_New(dim);
+        for(j = 0; j < dim; j++){
+            temp_float = PyFloat_FromDouble(float_list[i*dim + j]);
+            PyList_SetItem(temp_list, j, temp_float);
+        }
+        PyList_SetItem(python_list, i, temp_list);
+    }
+    free(float_list);
+    return python_list;
+}
+
+
+static PyObject* fit_capi(PyObject *self, PyObject *args)
+{
+    PyObject* vector_float_list;
+    PyObject* centroid_float_list;
+    PyObject* python_list_result;
+    double* vector_list;
+    double* centroid_list;
+    double* centroid_flattened_list;
+    Vector** k_means_result;
+    int i, j, idx;
+
+    if (!PyArg_ParseTuple(args, "OOiiiiO", &vector_float_list, &centroid_float_list, &num_of_vectors, &dim, &K, &MAX_ITER, &EPSILON)){
+        return NULL;
+    }
+
+    vector_list = python_list_to_c_array(vector_float_list);
+    centroid_list = python_list_to_c_array(centroid_float_list);
+    k_means_result = fit_c(vector_list, centroid_list);
+
+    centroid_flattened_list = (double *) malloc(sizeof(double *) * K * dim);
+    if(centroid_float_list == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+
+    idx = 0;
+    for(i = 0; i < K; i++){
+        for(j = 0; j < dim; j++){
+            centroid_flattened_list[idx] = (k_means_result[i] -> coordinate)[j];
+            idx++;
+        }
+    }
+
+    python_list_result = c_array_to_python_list(centroid_flattened_list);
+
+    free(k_means_result);
+    
+    return Py_BuildValue("O", python_list_result);
 }
