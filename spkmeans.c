@@ -568,10 +568,10 @@ int main(int argc, char* argv[]){
         jacobi_c(points);
     }
     else if(strcmp(argv[1], "wam") == 0){
-        ddg_c(points);
+        wam_c(points);
     }
     else if(strcmp(argv[1],"ddg") == 0){
-        wam_c(points);
+        ddg_c(points);
     }
     else if(strcmp(argv[1],"lnorm") == 0){
        lnorm_c(points);
