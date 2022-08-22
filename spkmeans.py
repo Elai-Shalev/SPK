@@ -86,6 +86,8 @@ if __name__ == '__main__':
 
         if operation == "spk":
             reduced_data = dimension_reduction(file_name, K)
+            print("here is reduced data\n")
+            print(reduced_data)
             K = int(spkm.get_K()[0])
             vector_data = np.array(reduced_data).reshape((len(reduced_data)//K, K))
             initial_centroid_indices, centroids = run_kmeans(K, EPSILON, max_iter, reduced_data)

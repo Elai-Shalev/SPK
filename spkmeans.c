@@ -18,25 +18,42 @@ double* dimension_reduction_spk(double* points){
     eigen_vectors = data[1];
     free(data);
 
+    
+
     eigen_vectors_matrix = convert_double_array_to_matrix(
         eigen_vectors,num_of_vectors,num_of_vectors);
+
+    printf("I am here 1\n");
 
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
     sort_eigen_v(eigen_values, eigen_vectors_matrix);
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
 
+    printf("I am here 2\n");
+    print_matrix_doublestar(eigen_vectors_matrix,',',num_of_vectors,num_of_vectors);
+
     if (K == 0){
         K = determine_k(eigen_values);
     }
+    printf("K is%d/n", K);
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
 
+    printf("I am here 3\n");
+    print_matrix_doublestar(eigen_vectors_matrix,',',num_of_vectors,num_of_vectors);
+
     normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K+1);
+
+    printf("I am here 4\n");
+    print_matrix(normalized_eigen_vectors,',',num_of_vectors,K+1);
 
     free(l_norm);
     free(eigen_values);
     free(eigen_vectors);
     free(eigen_vectors_matrix);
+    printf("free 4 is done \n also here is the last matrix\n");
+    print_matrix(normalized_eigen_vectors, ',',num_of_vectors,K+1);
+
     return normalized_eigen_vectors; /* T in the algorithm */
 }
 
@@ -355,7 +372,6 @@ double** calc_eigen(double* A){
     for (i = 0; i < num_of_vectors; i++){
         eigenvalues[i] = A[num_of_vectors*i+i];
     }
-    free(A);
 
     result[0] = eigenvalues;
     result[1] = V;
