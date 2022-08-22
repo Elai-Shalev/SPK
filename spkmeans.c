@@ -164,7 +164,7 @@ double* calc_weighted_matrix(double* points){
                 weighted_adj_matrix[num_of_vectors*i+j] = 1;
             }
             else{
-                double norm_i_j = euclidian_dist(points,i,j);
+                norm_i_j = euclidian_dist(points,i,j);
                 weighted_adj_matrix[num_of_vectors*i+j] = exp(-0.5*norm_i_j);
                 weighted_adj_matrix[num_of_vectors*j+i] = exp(-0.5*norm_i_j);
             }
@@ -225,10 +225,12 @@ double* calc_lnorm_matrix(double* points){
 
 
 int* max_abs_off_diagonal_entry(double* mat, int size){
+    int i=0;
+    int j=0;
     int* data = (int*)malloc(sizeof(int)*2);
     double currmax, currnum;
     NULL_ERROR_CHECK(data);
-    int i, j;
+    
 
     data[0] = 0;
     data[1] = 1;
@@ -264,9 +266,10 @@ double sum_squares_off_diagonal(double* mat, int size){
 }
 
 double* create_initial_p_matrix(int i, int j, double c, double s){
+    int k=0;
     double* P = (double*)calloc(SQR(num_of_vectors), sizeof(double));
     NULL_ERROR_CHECK(P);
-    int k;
+    
 
     for (k = 0; k < num_of_vectors; k++){
         P[k*num_of_vectors + k] = 1;
@@ -288,7 +291,9 @@ double** calc_eigen(double* A){
     int* data;
     double c, s, sum_A_squared, sum_A_next_squared;
     double temp_ii, temp_ij, temp_jj, temp_ri, temp_rj;
-    int max_i, max_j, r, l, i;
+    int max_i, max_j;
+    int r=0;
+    int i=0;
     int iteration = 1;
 
     result = (double**)malloc(sizeof(double*)*2);
@@ -360,6 +365,7 @@ double** calc_eigen(double* A){
 
 double * pivot_jacobi(double * A, int max_i, int max_j){
     int sign;
+    double * return_vals;
     double t, c, s;
     double theta = (A[max_j*num_of_vectors+max_j] 
                     - A[max_i*num_of_vectors+max_i]) /
@@ -373,7 +379,7 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     t = sign / (ABS(theta)+ sqrt(SQR(theta)+1));
     c = 1 / (sqrt(SQR(t)+1));
     s = t*c;
-    double * return_vals = (double*)malloc(2*sizeof(double));
+    return_vals = (double*)malloc(2*sizeof(double));
     NULL_ERROR_CHECK(return_vals);
     return_vals[0] = c;
     return_vals[1] = s;
@@ -397,18 +403,19 @@ void rotation_matrix_multiply_simplified(double * mat,
 double* read_file(char* file_in){
     FILE *ifp;
     int vec_size = 1;
+    int startplace=0;
     int flag =0;
     int vector_count=0;
     char c = 'a';
     int nch =0; 
     int i = 0;
-    int size = 1000;
-    char *buf = malloc(size);
-    NULL_ERROR_CHECK(buf);
-    int startplace;
     int vec_idx;
     char* g;
     double* points;
+    int size = 1000;
+    char *buf = malloc(size);
+    NULL_ERROR_CHECK(buf);
+    
 
     ifp = NULL;
     ifp = fopen(file_in, "r");
@@ -556,7 +563,7 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    // DELETE SPK!!!
+    /* DELETE SPK!!!*/
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
         strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0 
                 || strcmp(argv[1], "spk") != 0)){
@@ -585,6 +592,7 @@ int main(int argc, char* argv[]){
         exit(1);
     }
     free(points);
+    return 0;
 }
 
 

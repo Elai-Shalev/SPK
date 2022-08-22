@@ -74,8 +74,7 @@ void divide_vector(Vector* vec, int divisor);
 int update_centroids(Vector** vector_list, Vector** centroids);
 void run_kmeans(Vector** vectors, Vector** centroids);
 Vector** double_array_to_vector_array(double* vector_array);
-double* python_list_to_c_array(PyObject* float_list);
-PyObject* c_array_to_python_list(double* float_list);
+
 Vector** fit_c(double* vector_array, double* centroid_array);
 void wam_c(double* points);
 

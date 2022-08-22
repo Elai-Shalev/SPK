@@ -7,6 +7,8 @@ static PyObject* lnorm_capi(PyObject *self, PyObject *args);
 static PyObject* jacobi_capi(PyObject *self, PyObject *args);
 static PyObject* dmr_capi(PyObject *self, PyObject *args);
 static PyObject* get_K(PyObject *self, PyObject *args);
+static double* python_list_to_c_array(PyObject* float_list);
+static PyObject* c_array_to_python_list(double* float_list);
 
 double* python_list_to_c_array(PyObject* float_list){
     double* double_arr;
