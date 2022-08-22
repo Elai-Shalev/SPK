@@ -35,6 +35,9 @@ double* dimension_reduction_spk(double* points){
     if (K == 0){
         K = determine_k(eigen_values);
     }
+    else{
+        K--;
+    }
     printf("K is%d/n", K);
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
