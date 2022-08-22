@@ -16,7 +16,7 @@ double* python_list_to_c_array(PyObject* float_list){
     int index;
     PyObject *item;
 
-    pr_length = PyObject_Length(float_list);
+    pr_length = (int)PyObject_Length(float_list);
     if (pr_length < 0)
         return NULL;
 
@@ -107,9 +107,10 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    points = read_file(python_filename);
+    points = read_file((char*)python_filename);
     wam_c(points);
     free(points);
+    return self;
 }
 
 static PyObject* ddg_capi(PyObject *self, PyObject *args)
@@ -121,9 +122,10 @@ static PyObject* ddg_capi(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    points = read_file(python_filename);
+    points = read_file((char*)python_filename);
     ddg_c(points);
     free(points);
+    return self;
 }
 
 static PyObject* lnorm_capi(PyObject *self, PyObject *args)
@@ -135,9 +137,10 @@ static PyObject* lnorm_capi(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    points = read_file(python_filename);
+    points = read_file((char*)python_filename);
     lnorm_c(points);
     free(points);
+    return self;
 }
 
 static PyObject* jacobi_capi(PyObject *self, PyObject *args)
@@ -149,9 +152,10 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    points = read_file(python_filename);
+    points = read_file((char*)python_filename);
     jacobi_c(points);
     free(points);
+    return self;
 }
 
 static PyObject* dmr_capi(PyObject *self, PyObject *args)
@@ -165,7 +169,7 @@ static PyObject* dmr_capi(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    points = read_file(python_filename);
+    points = read_file((char*)python_filename);
     reduced = dimension_reduction_spk(points);
     python_list_result = c_array_to_python_list(reduced);
 

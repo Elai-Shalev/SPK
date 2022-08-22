@@ -77,5 +77,8 @@ Vector** double_array_to_vector_array(double* vector_array);
 
 Vector** fit_c(double* vector_array, double* centroid_array);
 void wam_c(double* points);
+void ddg_c(double* points);
+void lnorm_c(double* points);
+void jacobi_c(double* points);
 
 #endif
