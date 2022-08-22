@@ -49,13 +49,12 @@ def run_kmeans(K, EPSILON, max_iter, vector_data):
     centroids_indices, centroids = initialize_centroids(vector_data, K)
     centroids = list(np.array(centroids).flatten())
 
-    vector_dataframe = vector_dataframe.to_numpy()
-    number_of_vectors =  len(vector_dataframe)
-    dimension = len(vector_dataframe[0])
+    number_of_vectors =  len(vector_data)
+    dimension = len(vector_data[0])
 
-    vector_dataframe = list(vector_dataframe.flatten())
+    vector_data = list(vector_data.flatten())
     # Run C library's kms.fit
-    new_centroids = spkm.fit(vector_dataframe, centroids, number_of_vectors, dimension, K, max_iter, float(EPSILON))
+    new_centroids = spkm.fit(vector_data, centroids, number_of_vectors, dimension, K, max_iter, float(EPSILON))
     return centroids_indices, new_centroids
 
 
@@ -86,11 +85,9 @@ if __name__ == '__main__':
 
         if operation == "spk":
             reduced_data = dimension_reduction(file_name, K)
-            print("here is reduced data\n")
-            print(reduced_data)
-            K = int(spkm.get_K()[0])
-            vector_data = np.array(reduced_data).reshape((len(reduced_data)//K, K))
-            initial_centroid_indices, centroids = run_kmeans(K, EPSILON, max_iter, reduced_data)
+            K = int(spkm.get_K()[0][0])
+            reduced_data = np.array(reduced_data)
+            initial_centroid_indices, centroids = run_kmeans(K+1, EPSILON, max_iter, reduced_data)
 
             if initial_centroid_indices is not None:
                 print(','.join([str(i) for i in initial_centroid_indices]))

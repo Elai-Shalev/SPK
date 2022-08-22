@@ -41,15 +41,16 @@ double* python_list_to_c_array(PyObject* float_list){
 
 
 PyObject* c_array_to_python_list(double* float_list, int num_rows, int num_cols){
-    PyObject* python_list = PyList_New(K);
+    PyObject* python_list = PyList_New(num_rows);
     PyObject* temp_list;
     int i, j;
     PyObject* temp_float;
 
     for(i = 0; i < num_rows; i++){
-        temp_list = PyList_New(dim);
+        temp_list = PyList_New(num_cols);
         for(j = 0; j < num_cols; j++){
-            temp_float = PyFloat_FromDouble(float_list[i*num_cols + j]);
+            /* check why num_cols before */
+            temp_float = PyFloat_FromDouble(float_list[i*num_rows + j]);
             PyList_SetItem(temp_list, j, temp_float);
         }
         PyList_SetItem(python_list, i, temp_list);
@@ -182,6 +183,7 @@ static PyObject* get_K(PyObject *self, PyObject *args)
 {
     PyObject* python_list_result;
     double* currK = (double*)malloc(sizeof(double));
+    NULL_ERROR_CHECK(currK);
     currK[0] = (double)K;
     python_list_result = c_array_to_python_list(currK, 1, 1);
 

@@ -18,19 +18,12 @@ double* dimension_reduction_spk(double* points){
     eigen_vectors = data[1];
     free(data);
 
-    
-
     eigen_vectors_matrix = convert_double_array_to_matrix(
         eigen_vectors,num_of_vectors,num_of_vectors);
-
-    printf("I am here 1\n");
 
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
     sort_eigen_v(eigen_values, eigen_vectors_matrix);
     transpose_square_matrix_inplace(eigen_vectors_matrix, num_of_vectors);
-
-    printf("I am here 2\n");
-    print_matrix_doublestar(eigen_vectors_matrix,',',num_of_vectors,num_of_vectors);
 
     if (K == 0){
         K = determine_k(eigen_values);
@@ -38,44 +31,18 @@ double* dimension_reduction_spk(double* points){
     else{
         K--;
     }
-    printf("K is%d/n", K);
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
 
-    printf("I am here 3\n");
-    print_matrix_doublestar(eigen_vectors_matrix,',',num_of_vectors,num_of_vectors);
-
     normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K+1);
-
-    printf("I am here 4\n");
-    print_matrix(normalized_eigen_vectors,',',num_of_vectors,K+1);
 
     free(l_norm);
     free(eigen_values);
     free(eigen_vectors);
     free(eigen_vectors_matrix);
-    printf("free 4 is done \n also here is the last matrix\n");
-    print_matrix(normalized_eigen_vectors, ',',num_of_vectors,K+1);
 
     return normalized_eigen_vectors; /* T in the algorithm */
 }
-
-/*
-DELETE THIS AFTER
-double* transpose_matrix_copy(double** matrix, int rows, int cols)
-{
-    double* transposed_matrix;
-    int i, j;
-    transposed_matrix = (double*)malloc(sizeof(double)*rows*cols);
-    NULL_ERROR_CHECK(transposed_matrix);
-
-    for(i = 0; i < cols; i++){
-        for(j = 0; j < rows; j++){
-            transposed_matrix[i*cols+j] = matrix[i][j];
-        }
-    }
-    return transposed_matrix;
-}*/
 
 void transpose_square_matrix_inplace(double** matrix, int size){
     int i, j;
@@ -582,10 +549,8 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    /* DELETE SPK!!!*/
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
-        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0 
-                || strcmp(argv[1], "spk") != 0)){
+        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0)){
         printf("Invalid Input!");
         exit(1);
     }
@@ -601,10 +566,6 @@ int main(int argc, char* argv[]){
     }
     else if(strcmp(argv[1],"lnorm") == 0){
        lnorm_c(points);
-    }
-    else if(strcmp(argv[1],"spk") == 0){
-        lnorm = dimension_reduction_spk(points);
-        free(lnorm);
     }
     else{
         printf("Invalid Input!");
