@@ -8,7 +8,8 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args);
 static PyObject* dmr_capi(PyObject *self, PyObject *args);
 static PyObject* get_K(PyObject *self, PyObject *args);
 static double* python_list_to_c_array(PyObject* float_list);
-static PyObject* c_array_to_python_list(double* float_list);
+static PyObject* c_array_to_python_list(double* float_list, 
+                                        int num_rows, int num_cols);
 
 double* python_list_to_c_array(PyObject* float_list){
     double* double_arr;
@@ -39,16 +40,16 @@ double* python_list_to_c_array(PyObject* float_list){
 }
 
 
-PyObject* c_array_to_python_list(double* float_list){
+PyObject* c_array_to_python_list(double* float_list, int num_rows, int num_cols){
     PyObject* python_list = PyList_New(K);
     PyObject* temp_list;
     int i, j;
     PyObject* temp_float;
 
-    for(i = 0; i < K; i++){
+    for(i = 0; i < num_rows; i++){
         temp_list = PyList_New(dim);
-        for(j = 0; j < dim; j++){
-            temp_float = PyFloat_FromDouble(float_list[i*dim + j]);
+        for(j = 0; j < num_cols; j++){
+            temp_float = PyFloat_FromDouble(float_list[i*num_cols + j]);
             PyList_SetItem(temp_list, j, temp_float);
         }
         PyList_SetItem(python_list, i, temp_list);
@@ -91,7 +92,7 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
         }
     }
 
-    python_list_result = c_array_to_python_list(centroid_flattened_list);
+    python_list_result = c_array_to_python_list(centroid_flattened_list, K, dim);
 
     free(k_means_result);
     
@@ -171,7 +172,7 @@ static PyObject* dmr_capi(PyObject *self, PyObject *args)
 
     points = read_file((char*)python_filename);
     reduced = dimension_reduction_spk(points);
-    python_list_result = c_array_to_python_list(reduced);
+    python_list_result = c_array_to_python_list(reduced, num_of_vectors, K+1);
 
     free(points);
     return Py_BuildValue("O", python_list_result);
@@ -182,7 +183,7 @@ static PyObject* get_K(PyObject *self, PyObject *args)
     PyObject* python_list_result;
     double* currK = (double*)malloc(sizeof(double));
     currK[0] = (double)K;
-    python_list_result = c_array_to_python_list(currK);
+    python_list_result = c_array_to_python_list(currK, 1, 1);
 
     return Py_BuildValue("O", python_list_result);
 }
