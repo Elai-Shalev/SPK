@@ -1,4 +1,6 @@
 #include "spkmeans.h"
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
 
 static PyObject* kmpp_capi(PyObject *self, PyObject *args);
 static PyObject* wam_capi(PyObject *self, PyObject *args);

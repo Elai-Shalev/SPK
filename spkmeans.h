@@ -1,8 +1,6 @@
 #ifndef SPKMEANS_HEADER_FILE_H
 #define SPKMEANS_HEADER_FILE_H
 
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

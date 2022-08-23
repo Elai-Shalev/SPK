@@ -147,7 +147,7 @@ double* calc_weighted_matrix(double* points){
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
             if(i==j){
-                weighted_adj_matrix[num_of_vectors*i+j] = 1;
+                weighted_adj_matrix[num_of_vectors*i+j] = 0;
             }
             else{
                 norm_i_j = euclidian_dist(points,i,j);
