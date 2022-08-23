@@ -87,7 +87,7 @@ if __name__ == '__main__':
             reduced_data = dimension_reduction(file_name, K)
             K = int(spkm.get_K()[0][0])
             reduced_data = np.array(reduced_data)
-            initial_centroid_indices, centroids = run_kmeans(K+1, EPSILON, max_iter, reduced_data)
+            initial_centroid_indices, centroids = run_kmeans(K, EPSILON, max_iter, reduced_data)
 
             if initial_centroid_indices is not None:
                 print(','.join([str(i) for i in initial_centroid_indices]))

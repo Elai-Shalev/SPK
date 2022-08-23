@@ -11,7 +11,6 @@
 /* Global Variables */
 int MAX_ITER;
 int K;
-int num_clusters;
 double const EPSILON;
 const char* filename;
 int dim;

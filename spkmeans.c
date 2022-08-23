@@ -28,14 +28,10 @@ double* dimension_reduction_spk(double* points){
     if (K == 0){
         K = determine_k(eigen_values);
     }
-    else{
-        K--;
-    }
-    num_clusters = K+1;
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
 
-    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, num_clusters);
+    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K);
 
     free(l_norm);
     free(eigen_values);
@@ -62,8 +58,8 @@ void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
     int i,j;
     double curr_norma = 0;
     for(i = 0; i < num_of_vectors; i++){
-        curr_norma = calc_norma(eigen_vectors_matrix[i], k+1);
-        for(j=0; j < k+1; j++){
+        curr_norma = calc_norma(eigen_vectors_matrix[i], k);
+        for(j=0; j < k; j++){
             if (curr_norma != 0){
                 eigen_vectors_matrix[i][j] /= curr_norma;
             }
@@ -91,7 +87,7 @@ int determine_k(double* sorted_eigen_values){
             k=i;
         }
     }
-    return k;
+    return k+1;
 }
 
 double** convert_double_array_to_matrix(double* array, 
@@ -580,7 +576,7 @@ int main(int argc, char* argv[]){
     else if(strcmp(argv[1],"spk") == 0){
         lnorm = dimension_reduction_spk(points);
         printf("Matrix T\n");
-        print_matrix(lnorm, ',', num_of_vectors, num_clusters);
+        print_matrix(lnorm, ',', num_of_vectors, K);
         free(lnorm);
     }
     else{
@@ -610,7 +606,7 @@ void assign_to_nearest_cluster(Vector* vec, Vector** centroids){
     double distance_from_cluster;
     int i;
     
-    for(i = 0; i < num_clusters; i++){
+    for(i = 0; i < K; i++){
         distance_from_cluster = square_distance(vec, centroids[i]);
         if (i == 0 || (distance_from_cluster < min_distance)){
             min_distance = distance_from_cluster;
@@ -695,7 +691,7 @@ int update_centroids(Vector** vector_list, Vector** centroids){
         exit(1);
     }
 
-    for(i = 0; i < num_clusters; i++){
+    for(i = 0; i < K; i++){
         cluster_sums[i] = new_zero_vector();
         cluster_sizes[i] = 0;
     }
@@ -705,7 +701,7 @@ int update_centroids(Vector** vector_list, Vector** centroids){
         cluster_sizes[vector_list[i]->cluster]++;
     }
 
-    for(i = 0; i < num_clusters; i++){
+    for(i = 0; i < K; i++){
         divide_vector(cluster_sums[i], cluster_sizes[i]);
         if (sqrt(square_distance(centroids[i], cluster_sums[i])) >= EPSILON){
             returnValue = 0;

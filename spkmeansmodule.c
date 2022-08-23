@@ -78,21 +78,21 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     centroid_list = python_list_to_c_array(centroid_float_list);
     k_means_result = fit_c(vector_list, centroid_list);
 
-    centroid_flattened_list = (double *) malloc(sizeof(double) * num_clusters * dim);
+    centroid_flattened_list = (double *) malloc(sizeof(double) * K * dim);
     if(centroid_float_list == NULL){
         printf("An Error Has Occurred");
         exit(1);
     }
 
     idx = 0;
-    for(i = 0; i < num_clusters; i++){
+    for(i = 0; i < K; i++){
         for(j = 0; j < dim; j++){
             centroid_flattened_list[idx] = (k_means_result[i] -> coordinate)[j];
             idx++;
         }
     }
 
-    python_list_result = c_array_to_python_list(centroid_flattened_list, num_clusters, dim);
+    python_list_result = c_array_to_python_list(centroid_flattened_list, K, dim);
 
     free(k_means_result);
     
@@ -172,7 +172,7 @@ static PyObject* dmr_capi(PyObject *self, PyObject *args)
 
     points = read_file((char*)python_filename);
     reduced = dimension_reduction_spk(points);
-    python_list_result = c_array_to_python_list(reduced, num_of_vectors, num_clusters);
+    python_list_result = c_array_to_python_list(reduced, num_of_vectors, K);
 
     free(points);
     return Py_BuildValue("O", python_list_result);
