@@ -51,8 +51,7 @@ PyObject* c_array_to_python_list(double* float_list, int num_rows, int num_cols)
     for(i = 0; i < num_rows; i++){
         temp_list = PyList_New(num_cols);
         for(j = 0; j < num_cols; j++){
-            /* check why num_cols before */
-            temp_float = PyFloat_FromDouble(float_list[i*num_rows + j]);
+            temp_float = PyFloat_FromDouble(float_list[i*num_cols + j]);
             PyList_SetItem(temp_list, j, temp_float);
         }
         PyList_SetItem(python_list, i, temp_list);
@@ -100,21 +99,21 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     centroid_list = python_list_to_c_array(centroid_float_list);
     k_means_result = fit_c(vector_list, centroid_list);
 
-    centroid_flattened_list = (double *) malloc(sizeof(double) * K * dim);
+    centroid_flattened_list = (double *) malloc(sizeof(double) * num_clusters * dim);
     if(centroid_float_list == NULL){
         printf("An Error Has Occurred");
         exit(1);
     }
 
     idx = 0;
-    for(i = 0; i < K; i++){
+    for(i = 0; i < num_clusters; i++){
         for(j = 0; j < dim; j++){
             centroid_flattened_list[idx] = (k_means_result[i] -> coordinate)[j];
             idx++;
         }
     }
 
-    python_list_result = c_array_to_python_list(centroid_flattened_list, K, dim);
+    python_list_result = c_array_to_python_list(centroid_flattened_list, num_clusters, dim);
 
     free(k_means_result);
     
@@ -194,7 +193,7 @@ static PyObject* dmr_capi(PyObject *self, PyObject *args)
 
     points = read_file((char*)python_filename);
     reduced = dimension_reduction_spk(points);
-    python_list_result = c_array_to_python_list(reduced, num_of_vectors, K+1);
+    python_list_result = c_array_to_python_list(reduced, num_of_vectors, num_clusters);
 
     free(points);
     return Py_BuildValue("O", python_list_result);

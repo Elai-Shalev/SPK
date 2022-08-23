@@ -31,10 +31,11 @@ double* dimension_reduction_spk(double* points){
     else{
         K--;
     }
+    num_clusters = K+1;
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
 
-    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K+1);
+    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, num_clusters);
 
     free(l_norm);
     free(eigen_values);
@@ -115,7 +116,7 @@ double* convert_matrix_to_double_array(double** matrix,
 
     for(i = 0; i < new_num_rows; i++){
         for(j = 0; j < new_num_cols; j++){
-            array[i*new_num_rows+j] = matrix[i][j];
+            array[i*new_num_cols+j] = matrix[i][j];
         }
     }
     return array;
@@ -456,7 +457,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     int i,j;
     for(i = 0; i < num_rows; i++){
         for(j = 0; j < num_cols; j++){
-            printf("%.4f", matrix[num_rows*i + j]);
+            printf("%.4f", matrix[num_cols*i + j]);
             if(j!=(num_cols-1)){
                 printf("%c", deli);
             }
@@ -550,13 +551,16 @@ void jacobi_c(double* points){
 int main(int argc, char* argv[]){
     double* points;
     double* lnorm;
+    K = 0;
     if(argc != 3){
         printf("Invalid Input!");
         exit(1);
     }
 
+    /* DELETE SPK */
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
-        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0)){
+        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0
+        || strcmp(argv[1], "spk") != 0)){
         printf("Invalid Input!");
         exit(1);
     }
@@ -572,6 +576,12 @@ int main(int argc, char* argv[]){
     }
     else if(strcmp(argv[1],"lnorm") == 0){
        lnorm_c(points);
+    }
+    else if(strcmp(argv[1],"spk") == 0){
+        lnorm = dimension_reduction_spk(points);
+        printf("Matrix T\n");
+        print_matrix(lnorm, ',', num_of_vectors, num_clusters);
+        free(lnorm);
     }
     else{
         printf("Invalid Input!");
@@ -600,7 +610,7 @@ void assign_to_nearest_cluster(Vector* vec, Vector** centroids){
     double distance_from_cluster;
     int i;
     
-    for(i = 0; i < K; i++){
+    for(i = 0; i < num_clusters; i++){
         distance_from_cluster = square_distance(vec, centroids[i]);
         if (i == 0 || (distance_from_cluster < min_distance)){
             min_distance = distance_from_cluster;
@@ -685,7 +695,7 @@ int update_centroids(Vector** vector_list, Vector** centroids){
         exit(1);
     }
 
-    for(i = 0; i < K; i++){
+    for(i = 0; i < num_clusters; i++){
         cluster_sums[i] = new_zero_vector();
         cluster_sizes[i] = 0;
     }
@@ -695,7 +705,7 @@ int update_centroids(Vector** vector_list, Vector** centroids){
         cluster_sizes[vector_list[i]->cluster]++;
     }
 
-    for(i = 0; i < K; i++){
+    for(i = 0; i < num_clusters; i++){
         divide_vector(cluster_sums[i], cluster_sizes[i]);
         if (sqrt(square_distance(centroids[i], cluster_sums[i])) >= EPSILON){
             returnValue = 0;
