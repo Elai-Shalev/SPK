@@ -10,6 +10,8 @@ static PyObject* get_K(PyObject *self, PyObject *args);
 static double* python_list_to_c_array(PyObject* float_list);
 static PyObject* c_array_to_python_list(double* float_list, 
                                         int num_rows, int num_cols);
+static PyObject* c_array_to_python_list_old(double* float_list, 
+                                        int num_rows, int num_cols);
 
 double* python_list_to_c_array(PyObject* float_list){
     double* double_arr;
@@ -59,6 +61,25 @@ PyObject* c_array_to_python_list(double* float_list, int num_rows, int num_cols)
     return python_list;
 }
 
+PyObject* c_array_to_python_list_old(double* float_list, int num_rows, int num_cols){
+    PyObject* python_list = PyList_New(num_rows);
+    PyObject* temp_list;
+    int i, j;
+    PyObject* temp_float;
+
+    for(i = 0; i < num_rows; i++){
+        temp_list = PyList_New(num_cols);
+        for(j = 0; j < num_cols; j++){
+            /* check why num_cols before */
+            temp_float = PyFloat_FromDouble(float_list[i*num_cols + j]);
+            PyList_SetItem(temp_list, j, temp_float);
+        }
+        PyList_SetItem(python_list, i, temp_list);
+    }
+    free(float_list);
+    return python_list;
+}
+
 
 static PyObject* kmpp_capi(PyObject *self, PyObject *args)
 {
@@ -79,7 +100,7 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     centroid_list = python_list_to_c_array(centroid_float_list);
     k_means_result = fit_c(vector_list, centroid_list);
 
-    centroid_flattened_list = (double *) malloc(sizeof(double *) * K * dim);
+    centroid_flattened_list = (double *) malloc(sizeof(double) * K * dim);
     if(centroid_float_list == NULL){
         printf("An Error Has Occurred");
         exit(1);

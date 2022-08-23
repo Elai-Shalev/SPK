@@ -63,7 +63,9 @@ void normalize_first_k_vectors(double** eigen_vectors_matrix, int k){
     for(i = 0; i < num_of_vectors; i++){
         curr_norma = calc_norma(eigen_vectors_matrix[i], k+1);
         for(j=0; j < k+1; j++){
-            eigen_vectors_matrix[i][j] /= curr_norma;
+            if (curr_norma != 0){
+                eigen_vectors_matrix[i][j] /= curr_norma;
+            }
         }
     }
 }
