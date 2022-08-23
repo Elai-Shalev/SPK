@@ -111,7 +111,7 @@ double* convert_matrix_to_double_array(double** matrix,
     double* array;
     int i, j;
     array = (double*)malloc(sizeof(double)*new_num_cols*new_num_rows);
-    NULL_ERROR_CHECK(matrix);
+    NULL_ERROR_CHECK(array);
 
     for(i = 0; i < new_num_rows; i++){
         for(j = 0; j < new_num_cols; j++){
@@ -209,6 +209,8 @@ double* calc_lnorm_matrix(double* points){
         }
     }
 
+    free(weighted_matrix);
+    free(diagonal_deg_matrix);
     return lnorm_matrix;
 }
 
@@ -539,6 +541,8 @@ void jacobi_c(double* points){
     }
     printf("\n");
     print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
+    free(data[0]);
+    free(data[1]);
     free(data);
     free(lnorm);
 }
