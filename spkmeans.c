@@ -37,7 +37,8 @@ double* dimension_reduction_spk(double* points){
         
     normalize_first_k_vectors(eigen_vectors_matrix, K);
 
-    normalized_eigen_vectors = convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K);
+    normalized_eigen_vectors = 
+    convert_matrix_to_double_array(eigen_vectors_matrix, num_of_vectors, K);
 
     free(l_norm);
     free(eigen_values);
@@ -591,7 +592,8 @@ double square_distance(Vector* vec1, Vector* vec2){
     int i;
 
     for (i = 0; i < dim; i++){
-        sum_of_squares += pow(((vec1->coordinate)[i]) - ((vec2->coordinate)[i]),2);  
+        sum_of_squares += 
+         pow(((vec1->coordinate)[i]) - ((vec2->coordinate)[i]),2);  
     }
     
     return sum_of_squares;
