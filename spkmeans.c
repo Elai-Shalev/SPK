@@ -544,7 +544,6 @@ void jacobi_c(double* lnorm_input){
 
 int main(int argc, char* argv[]){
     double* points;
-    double* lnorm;
     K = 0;
     if(argc != 3){
         printf("Invalid Input!");
@@ -568,7 +567,7 @@ int main(int argc, char* argv[]){
         ddg_c(points);
     }
     else if(strcmp(argv[1],"lnorm") == 0){
-       lnorm_c(points);
+        lnorm_c(points);
     }
     else{
         printf("Invalid Input!");
