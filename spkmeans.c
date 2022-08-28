@@ -463,6 +463,7 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     }
 }
 
+
 void print_double_array(double* arr, char deli, int length){
     int i;
     for(i = 0; i < length; i++){
