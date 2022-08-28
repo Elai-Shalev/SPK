@@ -245,7 +245,7 @@ double sum_squares_off_diagonal(double* mat, int size){
     for (i = 0; i < size; i++){
         for (j = 0; j < size; j++){
             if (i != j){
-                sum += mat[i*size+j];
+                sum += SQR(mat[i*size+j]);
             }
         }
     } 
@@ -289,8 +289,6 @@ double** calc_eigen(double* A){
     eigenvalues = (double*)malloc(sizeof(double)*num_of_vectors);
     NULL_ERROR_CHECK(eigenvalues);
 
-    printf("Original Matrix\n");
-    print_matrix(A, ',', num_of_vectors, num_of_vectors);
     do{
         data = max_abs_off_diagonal_entry(A, num_of_vectors);
         max_i = data[0];
@@ -300,8 +298,6 @@ double** calc_eigen(double* A){
         s = P[1];
         free(data);
         free(P);
-        printf("c = %f, s = %f\n", c, s);
-        printf("maxi = %d, maxj = %d\n", max_i, max_j);
 
         sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
 
@@ -332,8 +328,6 @@ double** calc_eigen(double* A){
         A[max_j*num_of_vectors+max_i] = 0;
 
         if (iteration == 1){
-            printf("First Matrix after change\n");
-            print_matrix(A, ',', num_of_vectors, num_of_vectors);
             V = create_initial_p_matrix(max_i, max_j, c, s);
         }
         else{
