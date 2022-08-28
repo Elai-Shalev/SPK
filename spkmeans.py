@@ -108,3 +108,4 @@ if __name__ == '__main__':
 
     except Exception:
         print('An Error Has Occurred')
+        quit()
