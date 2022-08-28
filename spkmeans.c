@@ -77,7 +77,8 @@ double calc_norma(double* vector, int size){
 }
 
 int determine_k(double* sorted_eigen_values){
-    int i, k;
+    int i; 
+    int k = 0;
     double gap, curr_gap;
     gap = 0;
     for(i=0; i<(num_of_vectors/2); i++){
@@ -552,8 +553,7 @@ int main(int argc, char* argv[]){
 
     /* DELETE SPK */
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
-        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0
-        || strcmp(argv[1], "spk") != 0)){
+        strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0)){
         printf("Invalid Input!");
         exit(1);
     }
@@ -569,12 +569,6 @@ int main(int argc, char* argv[]){
     }
     else if(strcmp(argv[1],"lnorm") == 0){
        lnorm_c(points);
-    }
-    else if(strcmp(argv[1],"spk") == 0){
-        lnorm = dimension_reduction_spk(points);
-        printf("Matrix T\n");
-        print_matrix(lnorm, ',', num_of_vectors, K);
-        free(lnorm);
     }
     else{
         printf("Invalid Input!");

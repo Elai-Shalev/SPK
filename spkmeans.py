@@ -5,9 +5,6 @@ import numpy as np
 
 
 def initialize_centroids(vectors, K):
-    # Set random seed as 0 as specified in requirements
-    np.random.seed(0)
-    
     # Initialize centroid and centroid indices lists
     centroids = [0]*K
     centroids_indices = [0]*K
@@ -63,8 +60,11 @@ def dimension_reduction(file_name, K):
     return vectors_list
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     try:
+        # Set random seed as 0 as specified in requirements
+        np.random.seed(0)
+
         max_iter = 300
         EPSILON = 0
         if len(sys.argv) != 4:
