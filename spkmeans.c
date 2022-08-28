@@ -255,7 +255,6 @@ double sum_squares_off_diagonal(double* mat, int size){
 }
 
 double* create_initial_p_matrix(int i, int j, double c, double s){
-    int k=0;
     double* P = create_identity_matrix(num_of_vectors);
 
     P[i*num_of_vectors + i] = c;
@@ -268,11 +267,11 @@ double* create_initial_p_matrix(int i, int j, double c, double s){
 
 double* create_identity_matrix(int size){
     int i;
-    double* identity = (double*)calloc(pow(num_of_vectors,2), sizeof(double));
+    double* identity = (double*)calloc(pow(size,2), sizeof(double));
     NULL_ERROR_CHECK(identity);
 
-    for (i = 0; i < num_of_vectors; i++){
-        identity[i*num_of_vectors + i] = 1;
+    for (i = 0; i < size; i++){
+        identity[i*size + i] = 1;
     }
 
     return identity;
