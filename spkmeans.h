@@ -59,6 +59,8 @@ int* max_abs_off_diagonal_entry(double* mat, int size);
 double sum_squares_off_diagonal(double* mat, int size);
 /* Creates initial rotation matrix for Jacobi algorithm  */
 double* create_initial_p_matrix(int i, int j, double c, double s);
+/* Creates identity matrix */
+double* create_identity_matrix(int size);
 /* Calculates the Eigenvalues and Eigenvectors of a Normalized Laplacian */
 double** calc_eigen(double* A);
 /* Pivot step implementation according to the Jacobi algorithm */

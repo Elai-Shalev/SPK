@@ -256,13 +256,7 @@ double sum_squares_off_diagonal(double* mat, int size){
 
 double* create_initial_p_matrix(int i, int j, double c, double s){
     int k=0;
-    double* P = (double*)calloc(pow(num_of_vectors,2), sizeof(double));
-    NULL_ERROR_CHECK(P);
-    
-
-    for (k = 0; k < num_of_vectors; k++){
-        P[k*num_of_vectors + k] = 1;
-    }
+    double* P = create_identity_matrix(num_of_vectors);
 
     P[i*num_of_vectors + i] = c;
     P[j*num_of_vectors + j] = c;
@@ -270,6 +264,18 @@ double* create_initial_p_matrix(int i, int j, double c, double s){
     P[j*num_of_vectors + i] = -1*s;
 
     return P;
+}
+
+double* create_identity_matrix(int size){
+    int i;
+    double* identity = (double*)calloc(pow(num_of_vectors,2), sizeof(double));
+    NULL_ERROR_CHECK(identity);
+
+    for (i = 0; i < num_of_vectors; i++){
+        identity[i*num_of_vectors + i] = 1;
+    }
+
+    return identity;
 }
 
 double** calc_eigen(double* A){
@@ -290,66 +296,72 @@ double** calc_eigen(double* A){
     eigenvalues = (double*)malloc(sizeof(double)*num_of_vectors);
     NULL_ERROR_CHECK(eigenvalues);
 
-    do{
-        data = max_abs_off_diagonal_entry(A, num_of_vectors);
-        max_i = data[0];
-        max_j = data[1];
-        P = pivot_jacobi(A, max_i, max_j);
-        c = P[0];
-        s = P[1];
-        free(data);
-        free(P);
+    sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
 
-        sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
+    if(sum_A_squared == 0){
+        result[1] = create_identity_matrix(num_of_vectors);
+    }
+    else{
+        do{
+            data = max_abs_off_diagonal_entry(A, num_of_vectors);
+            max_i = data[0];
+            max_j = data[1];
+            P = pivot_jacobi(A, max_i, max_j);
+            c = P[0];
+            s = P[1];
+            free(data);
+            free(P);
 
-        temp_ii = A[max_i*num_of_vectors+max_i];
-        temp_ij = A[max_i*num_of_vectors+max_j];
-        temp_jj = A[max_j*num_of_vectors+max_j];
-        
-        for (r = 0; r < num_of_vectors; r++){
-            if ((r != max_i) && (r != max_j)){
-                temp_ri = A[r*num_of_vectors+max_i];
-                temp_rj = A[r*num_of_vectors+max_j];
+            sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
 
-                A[r*num_of_vectors+max_i] = c*temp_ri - s*temp_rj;
-                A[max_i*num_of_vectors+r] = c*temp_ri - s*temp_rj;
+            temp_ii = A[max_i*num_of_vectors+max_i];
+            temp_ij = A[max_i*num_of_vectors+max_j];
+            temp_jj = A[max_j*num_of_vectors+max_j];
+            
+            for (r = 0; r < num_of_vectors; r++){
+                if ((r != max_i) && (r != max_j)){
+                    temp_ri = A[r*num_of_vectors+max_i];
+                    temp_rj = A[r*num_of_vectors+max_j];
 
-                A[r*num_of_vectors+max_j] = c*temp_rj + s*temp_ri;
-                A[max_j*num_of_vectors+r] = c*temp_rj + s*temp_ri;
+                    A[r*num_of_vectors+max_i] = c*temp_ri - s*temp_rj;
+                    A[max_i*num_of_vectors+r] = c*temp_ri - s*temp_rj;
+
+                    A[r*num_of_vectors+max_j] = c*temp_rj + s*temp_ri;
+                    A[max_j*num_of_vectors+r] = c*temp_rj + s*temp_ri;
+                }
+            }
+
+            A[max_i*num_of_vectors+max_i] = 
+                    pow(c,2)*temp_ii + pow(s,2)*temp_jj - 2*s*c*temp_ij;
+
+            A[max_j*num_of_vectors+max_j] = 
+                    pow(s,2)*temp_ii + pow(c,2)*temp_jj + 2*s*c*temp_ij;
+
+            A[max_i*num_of_vectors+max_j] = 0;
+            A[max_j*num_of_vectors+max_i] = 0;
+
+            if (iteration == 1){
+                V = create_initial_p_matrix(max_i, max_j, c, s);
+            }
+            else{
+                rotation_matrix_multiply_simplified(V, max_i, max_j, c, s);
+            }
+
+            sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
+            iteration++;
+            if(sum_A_next_squared == 0){
+                break;
             }
         }
-
-        A[max_i*num_of_vectors+max_i] = 
-                pow(c,2)*temp_ii + pow(s,2)*temp_jj - 2*s*c*temp_ij;
-
-        A[max_j*num_of_vectors+max_j] = 
-                pow(s,2)*temp_ii + pow(c,2)*temp_jj + 2*s*c*temp_ij;
-
-        A[max_i*num_of_vectors+max_j] = 0;
-        A[max_j*num_of_vectors+max_i] = 0;
-
-        if (iteration == 1){
-            V = create_initial_p_matrix(max_i, max_j, c, s);
-        }
-        else{
-            rotation_matrix_multiply_simplified(V, max_i, max_j, c, s);
-        }
-
-        sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
-        iteration++;
-        if(sum_A_next_squared == 0){
-            break;
-        }
+        while((fabs(sum_A_squared - sum_A_next_squared) > JACOBIAN_EPSILON) && 
+        (iteration <= JACOBIAN_MAX_ITER));
+        result[1] = V;
     }
-    while((fabs(sum_A_squared - sum_A_next_squared) > JACOBIAN_EPSILON) && 
-    (iteration <= JACOBIAN_MAX_ITER));
-
     for (i = 0; i < num_of_vectors; i++){
         eigenvalues[i] = A[num_of_vectors*i+i];
     }
 
     result[0] = eigenvalues;
-    result[1] = V;
     return result;
 }
 
