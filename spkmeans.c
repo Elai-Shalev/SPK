@@ -463,19 +463,6 @@ void print_matrix(double* matrix, char deli, int num_rows, int num_cols){
     }
 }
 
-void print_matrix_doublestar(double** matrix, char deli, int num_rows, int num_cols){
-    int i,j;
-    for(i = 0; i < num_rows; i++){
-        for(j = 0; j < num_cols; j++){
-            printf("%.4f", matrix[i][j]);
-            if(j!=(num_cols-1)){
-                printf("%c", deli);
-            }
-        }
-        printf("\n");
-    }
-}
-
 void print_double_array(double* arr, char deli, int length){
     int i;
     for(i = 0; i < length; i++){
