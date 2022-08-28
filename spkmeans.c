@@ -289,6 +289,8 @@ double** calc_eigen(double* A){
     eigenvalues = (double*)malloc(sizeof(double)*num_of_vectors);
     NULL_ERROR_CHECK(eigenvalues);
 
+    printf("Original Matrix\n");
+    print_matrix(A, ',', num_of_vectors, num_of_vectors);
     do{
         data = max_abs_off_diagonal_entry(A, num_of_vectors);
         max_i = data[0];
@@ -298,6 +300,8 @@ double** calc_eigen(double* A){
         s = P[1];
         free(data);
         free(P);
+        printf("c = %f, s = %f\n", c, s);
+        printf("maxi = %d, maxj = %d\n", max_i, max_j);
 
         sum_A_squared = sum_squares_off_diagonal(A, num_of_vectors);
 
@@ -328,6 +332,8 @@ double** calc_eigen(double* A){
         A[max_j*num_of_vectors+max_i] = 0;
 
         if (iteration == 1){
+            printf("First Matrix after change\n");
+            print_matrix(A, ',', num_of_vectors, num_of_vectors);
             V = create_initial_p_matrix(max_i, max_j, c, s);
         }
         else{
@@ -524,12 +530,10 @@ void lnorm_c(double* points){
     free(lnorm);
 }
 
-void jacobi_c(double* points){
-    double* lnorm;
+void jacobi_c(double* lnorm_input){
     double** data;
     int i;
-    lnorm = calc_lnorm_matrix(points);
-    data = calc_eigen(lnorm);
+    data = calc_eigen(lnorm_input);
     for(i = 0; i<num_of_vectors; i++){
         printf("%.4f", data[0][i]);
         if(i!=(num_of_vectors-1)){
@@ -541,7 +545,6 @@ void jacobi_c(double* points){
     free(data[0]);
     free(data[1]);
     free(data);
-    free(lnorm);
 }
 
 int main(int argc, char* argv[]){
