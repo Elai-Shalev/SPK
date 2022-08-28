@@ -71,7 +71,7 @@ double calc_norma(double* vector, int size){
     double sum = 0;
     int i;
     for(i=0; i<size; i++){
-        sum += SQR(vector[i]);
+        sum += pow(vector[i],2);
     }
     return pow(sum, 0.5);
 }
@@ -81,8 +81,8 @@ int determine_k(double* sorted_eigen_values){
     int k = 0;
     double gap, curr_gap;
     gap = 0;
-    for(i=0; i<(num_of_vectors/2); i++){
-        curr_gap = ABS(sorted_eigen_values[i] - sorted_eigen_values[i+1]);
+    for(i=0; i< (int)(num_of_vectors/2); i++){
+        curr_gap = fabs(sorted_eigen_values[i] - sorted_eigen_values[i+1]);
         if(curr_gap > gap){
             gap = curr_gap;
             k=i;
@@ -143,7 +143,7 @@ double* calc_weighted_matrix(double* points){
     int j;
     double norm_i_j;
     double* weighted_adj_matrix = 
-    (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    (double*)malloc(sizeof(double)*pow(num_of_vectors,2));
     NULL_ERROR_CHECK(weighted_adj_matrix);
     for(i = 0; i<num_of_vectors; i++){
         for(j=i; j<num_of_vectors; j++){
@@ -191,7 +191,7 @@ double* calc_lnorm_matrix(double* points){
     double* diagonal_deg_matrix = calc_diagonal_deg_matrix(weighted_matrix);
     int i,j;
 
-    lnorm_matrix = (double*)malloc(sizeof(double)*SQR(num_of_vectors));
+    lnorm_matrix = (double*)malloc(sizeof(double)*pow(num_of_vectors,2));
     NULL_ERROR_CHECK(lnorm_matrix);
     
     for (i = 0; i < num_of_vectors; i++){
@@ -226,8 +226,8 @@ int* max_abs_off_diagonal_entry(double* mat, int size){
 
     for (i = 0; i < size; i++){
         for (j = 0; j < size; j++){
-            currmax = ABS(mat[(data[0])*size+(data[1])]);
-            currnum = ABS(mat[i*size+j]);
+            currmax = fabs(mat[(data[0])*size+(data[1])]);
+            currnum = fabs(mat[i*size+j]);
             if ((i != j) && (currmax < currnum)){
                 data[0] = i;
                 data[1] = j;
@@ -246,7 +246,7 @@ double sum_squares_off_diagonal(double* mat, int size){
     for (i = 0; i < size; i++){
         for (j = 0; j < size; j++){
             if (i != j){
-                sum += SQR(mat[i*size+j]);
+                sum += pow(mat[i*size+j],2);
             }
         }
     } 
@@ -256,7 +256,7 @@ double sum_squares_off_diagonal(double* mat, int size){
 
 double* create_initial_p_matrix(int i, int j, double c, double s){
     int k=0;
-    double* P = (double*)calloc(SQR(num_of_vectors), sizeof(double));
+    double* P = (double*)calloc(pow(num_of_vectors,2), sizeof(double));
     NULL_ERROR_CHECK(P);
     
 
@@ -320,10 +320,10 @@ double** calc_eigen(double* A){
         }
 
         A[max_i*num_of_vectors+max_i] = 
-                SQR(c)*temp_ii + SQR(s)*temp_jj - 2*s*c*temp_ij;
+                pow(c,2)*temp_ii + pow(s,2)*temp_jj - 2*s*c*temp_ij;
 
         A[max_j*num_of_vectors+max_j] = 
-                SQR(s)*temp_ii + SQR(c)*temp_jj + 2*s*c*temp_ij;
+                pow(s,2)*temp_ii + pow(c,2)*temp_jj + 2*s*c*temp_ij;
 
         A[max_i*num_of_vectors+max_j] = 0;
         A[max_j*num_of_vectors+max_i] = 0;
@@ -337,9 +337,12 @@ double** calc_eigen(double* A){
 
         sum_A_next_squared = sum_squares_off_diagonal(A, num_of_vectors);
         iteration++;
+        if(sum_A_next_squared == 0){
+            break;
+        }
     }
-    while((ABS(sum_A_squared - sum_A_next_squared) > JACOBIAN_EPSILON) && 
-    (iteration < JACOBIAN_MAX_ITER));
+    while((fabs(sum_A_squared - sum_A_next_squared) > JACOBIAN_EPSILON) && 
+    (iteration <= JACOBIAN_MAX_ITER));
 
     for (i = 0; i < num_of_vectors; i++){
         eigenvalues[i] = A[num_of_vectors*i+i];
@@ -364,8 +367,8 @@ double * pivot_jacobi(double * A, int max_i, int max_j){
     else{
         sign = 1;
     }
-    t = sign / (ABS(theta)+ sqrt(SQR(theta)+1));
-    c = 1 / (sqrt(SQR(t)+1));
+    t = sign / (fabs(theta)+ sqrt(pow(theta,2)+1));
+    c = 1 / (sqrt(pow(t,2)+1));
     s = t*c;
     return_vals = (double*)malloc(2*sizeof(double));
     NULL_ERROR_CHECK(return_vals);
@@ -571,7 +574,7 @@ double square_distance(Vector* vec1, Vector* vec2){
     int i;
 
     for (i = 0; i < dim; i++){
-        sum_of_squares += SQR(((vec1->coordinate)[i]) - ((vec2->coordinate)[i]));  
+        sum_of_squares += pow(((vec1->coordinate)[i]) - ((vec2->coordinate)[i]),2);  
     }
     
     return sum_of_squares;
