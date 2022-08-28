@@ -1,6 +1,5 @@
 import sys
 import spkmeansmodule as spkm
-import pandas as pd
 import numpy as np
 
 
@@ -91,7 +90,7 @@ if __name__ == '__main__':
 
         if operation == "spk":
             reduced_data = dimension_reduction(file_name, K)
-            K = int(spkm.get_K()[0][0])
+            K = spkm.get_K()
             reduced_data = np.array(reduced_data)
             initial_centroid_indices, centroids = run_kmeans(K, 
                                                              EPSILON, 

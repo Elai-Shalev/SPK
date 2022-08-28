@@ -524,7 +524,7 @@ void jacobi_c(double* lnorm_input){
             }
     }
     printf("\n");
-    print_matrix(data[1], ' ', num_of_vectors, num_of_vectors);
+    print_matrix(data[1], ',', num_of_vectors, num_of_vectors);
     free(data[0]);
     free(data[1]);
     free(data);

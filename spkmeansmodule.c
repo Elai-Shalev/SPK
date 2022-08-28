@@ -2,8 +2,6 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
-/* Creates and Returns instance of spkmeansmodule object */
-PyMODINIT_FUNC PyInit_spkmeansmodule(void);
 /* C-API function to calculate K-Means++ */
 static PyObject* kmpp_capi(PyObject *self, PyObject *args);
 /* C-API function to calculate Weighted Adjacency Matrix */
@@ -128,7 +126,7 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
     points = read_file((char*)python_filename);
     wam_c(points);
     free(points);
-    return self;
+    return PyLong_FromLong(0);
 }
 
 static PyObject* ddg_capi(PyObject *self, PyObject *args)
@@ -143,7 +141,7 @@ static PyObject* ddg_capi(PyObject *self, PyObject *args)
     points = read_file((char*)python_filename);
     ddg_c(points);
     free(points);
-    return self;
+    return PyLong_FromLong(0);
 }
 
 static PyObject* lnorm_capi(PyObject *self, PyObject *args)
@@ -158,7 +156,7 @@ static PyObject* lnorm_capi(PyObject *self, PyObject *args)
     points = read_file((char*)python_filename);
     lnorm_c(points);
     free(points);
-    return self;
+    return PyLong_FromLong(0);
 }
 
 static PyObject* jacobi_capi(PyObject *self, PyObject *args)
@@ -173,7 +171,7 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
     points = read_file((char*)python_filename);
     jacobi_c(points);
     free(points);
-    return self;
+    return PyLong_FromLong(0);
 }
 
 static PyObject* dmr_capi(PyObject *self, PyObject *args)
@@ -197,13 +195,7 @@ static PyObject* dmr_capi(PyObject *self, PyObject *args)
 
 static PyObject* get_K(PyObject *self, PyObject *args)
 {
-    PyObject* python_list_result;
-    double* currK = (double*)malloc(sizeof(double));
-    NULL_ERROR_CHECK(currK);
-    currK[0] = (double)K;
-    python_list_result = c_array_to_python_list(currK, 1, 1);
-
-    return Py_BuildValue("O", python_list_result);
+    return PyLong_FromLong(K);
 }
 
 static PyMethodDef capiMethods[] = {
