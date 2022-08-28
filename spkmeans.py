@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 
 
+# Initializes K centroids of input matrix. 
+# Returns initial centroids and their indicies 
 def initialize_centroids(vectors, K):
     # Initialize centroid and centroid indices lists
     centroids = [0]*K
@@ -20,7 +22,8 @@ def initialize_centroids(vectors, K):
     i = 0
     probability_distribution = [0]*len(vectors)
     while (i<K-1):
-        # For all 0<=l<=N-1  (N=number_of_vectors), set D[l] as vector with minimum distance
+        # For all 0<=l<=N-1  (N=number_of_vectors): 
+        # set D[l] as vector with minimum distance
         for l in range(len(vectors)):
             for j in range(i+1):
                 vec = (vectors[l] - centroids[j]) ** 2
@@ -35,14 +38,16 @@ def initialize_centroids(vectors, K):
         i = i+1
         
         # Set current initial centroid
-        centroids_indices[i] = np.random.choice(len(vectors), p=probability_distribution)
+        centroids_indices[i] = np.random.choice(len(vectors), 
+                                                p=probability_distribution)
         centroids[i] = vectors[centroids_indices[i]]
     
     return centroids_indices, centroids
     
 
+# Implementation of K-Means++ Algorithm
 def run_kmeans(K, EPSILON, max_iter, vector_data):
-    # Sort dataframe and calculate initial centroids
+    # Calculate initial centroids
     centroids_indices, centroids = initialize_centroids(vector_data, K)
     centroids = list(np.array(centroids).flatten())
 
@@ -51,7 +56,8 @@ def run_kmeans(K, EPSILON, max_iter, vector_data):
 
     vector_data = list(vector_data.flatten())
     # Run C library's kms.fit
-    new_centroids = spkm.fit(vector_data, centroids, number_of_vectors, dimension, K, max_iter, float(EPSILON))
+    new_centroids = spkm.fit(vector_data, centroids, number_of_vectors, 
+                             dimension, K, max_iter, float(EPSILON))
     return centroids_indices, new_centroids
 
 
@@ -87,7 +93,10 @@ if __name__ == '__main__':
             reduced_data = dimension_reduction(file_name, K)
             K = int(spkm.get_K()[0][0])
             reduced_data = np.array(reduced_data)
-            initial_centroid_indices, centroids = run_kmeans(K, EPSILON, max_iter, reduced_data)
+            initial_centroid_indices, centroids = run_kmeans(K, 
+                                                             EPSILON, 
+                                                             max_iter, 
+                                                             reduced_data)
 
             if initial_centroid_indices is not None:
                 print(','.join([str(i) for i in initial_centroid_indices]))

@@ -2,14 +2,25 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
+/* Creates and Returns instance of spkmeansmodule object */
+PyMODINIT_FUNC PyInit_spkmeansmodule(void);
+/* C-API function to calculate K-Means++ */
 static PyObject* kmpp_capi(PyObject *self, PyObject *args);
+/* C-API function to calculate Weighted Adjacency Matrix */
 static PyObject* wam_capi(PyObject *self, PyObject *args);
+/* C-API function to calculate Diagonal Degree Matrix */
 static PyObject* ddg_capi(PyObject *self, PyObject *args);
+/* C-API function to calculate L-Norm Matrix */
 static PyObject* lnorm_capi(PyObject *self, PyObject *args);
+/* C-API function to run Jacobi Algorithm on Symmetrical Matrix */
 static PyObject* jacobi_capi(PyObject *self, PyObject *args);
+/* C-API function to run Dimensionality Reduction before K-Means++ */
 static PyObject* dmr_capi(PyObject *self, PyObject *args);
+/* C-API function get the K parameter */
 static PyObject* get_K(PyObject *self, PyObject *args);
+/* Copy python list object with float elements to c double array */
 static double* python_list_to_c_array(PyObject* float_list);
+/* Copy c double array to python list object with float elements */
 static PyObject* c_array_to_python_list(double* float_list, 
                                         int num_rows, int num_cols);
 
@@ -42,7 +53,8 @@ double* python_list_to_c_array(PyObject* float_list){
 }
 
 
-PyObject* c_array_to_python_list(double* float_list, int num_rows, int num_cols){
+PyObject* c_array_to_python_list(double* float_list, 
+                                 int num_rows, int num_cols){
     PyObject* python_list = PyList_New(num_rows);
     PyObject* temp_list;
     int i, j;
@@ -72,7 +84,8 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     Vector** k_means_result;
     int i, j, idx;
 
-    if (!PyArg_ParseTuple(args, "OOiiiiO", &vector_float_list, &centroid_float_list, &num_of_vectors, &dim, &K, &MAX_ITER, &EPSILON)){
+    if (!PyArg_ParseTuple(args, "OOiiiiO", &vector_float_list, 
+    &centroid_float_list, &num_of_vectors, &dim, &K, &MAX_ITER, &EPSILON)){
         return NULL;
     }
 
@@ -89,12 +102,14 @@ static PyObject* kmpp_capi(PyObject *self, PyObject *args)
     idx = 0;
     for(i = 0; i < K; i++){
         for(j = 0; j < dim; j++){
-            centroid_flattened_list[idx] = (k_means_result[i] -> coordinate)[j];
+            centroid_flattened_list[idx] = 
+                (k_means_result[i] -> coordinate)[j];
             idx++;
         }
     }
 
-    python_list_result = c_array_to_python_list(centroid_flattened_list, K, dim);
+    python_list_result = c_array_to_python_list(centroid_flattened_list, 
+                                                K, dim);
 
     free(k_means_result);
     
