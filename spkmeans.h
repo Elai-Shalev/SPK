@@ -7,12 +7,12 @@
 #include <math.h>
 
 /* Global Variables */
-int MAX_ITER;
-int K;
-double const EPSILON;
-const char* filename;
-int dim;
-int num_of_vectors;
+extern int MAX_ITER;
+extern int K;
+extern double const EPSILON;
+extern const char* filename;
+extern int dim;
+extern int num_of_vectors;
 
 /* Macros */
 #define NULL_ERROR_CHECK(x) {\

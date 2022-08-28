@@ -4,6 +4,12 @@
 /* Global Variables */
 double const JACOBIAN_EPSILON = 0.00001;
 int const JACOBIAN_MAX_ITER = 100;
+int MAX_ITER;
+int K;
+double const EPSILON;
+const char* filename;
+int dim;
+int num_of_vectors;
 
 double* dimension_reduction_spk(double* points){
     double* l_norm; 
