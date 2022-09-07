@@ -545,8 +545,8 @@ void jacobi_c(double* lnorm_input){
     for(i = 0; i<num_of_vectors; i++){
         printf("%.4f", data[0][i]);
         if(i!=(num_of_vectors-1)){
-                printf("%c", ',');
-            }
+            printf("%c", ',');
+        }
     }
     printf("\n");
     print_matrix(data[1], ',', num_of_vectors, num_of_vectors);
