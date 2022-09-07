@@ -450,6 +450,10 @@ double* read_file(char* file_in){
     buf[nch++] = '\000';
     num_of_vectors = vector_count;
     dim = vec_size;
+    if (K>num_of_vectors){
+        printf("Invalid Input!");
+        exit(1);
+    }
     fclose(ifp);
     
     startplace = 0;
@@ -559,7 +563,6 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    /* DELETE SPK */
     if(!(strcmp(argv[1],"jacobi") != 0 || strcmp(argv[1], "wam") != 0 || 
         strcmp(argv[1],"ddg") != 0 || strcmp(argv[1], "lnorm") != 0)){
         printf("Invalid Input!");
