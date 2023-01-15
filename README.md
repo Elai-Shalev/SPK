@@ -23,7 +23,8 @@
     1. This program reads user CMD input, including a "goal" (specified below), and an input file name.
     2. The program will calculate and output according to the selected goal
     3. This file provides the C implementation for all algorithm goals,
-    providing service to the python interface to interact and calculate throught the c-Python API and reduce computation time and memory. 
+    providing service to the python interface to interact with the c-Python API 
+    and reduce computation time and memory. 
 
     The goals:
     wam: Calculate and output the Weighted Adjacency Matrix.
@@ -32,7 +33,8 @@
     jacobi: Calculate and output the eigenvalues and eigenvectors.
 
     ---spkmeans.py ---
-    1. This program reads user CMD input, including a parameter "k", a "goal" (specified below), and an input file name. 
+    1. This program reads user CMD input, including a parameter "k", a "goal" (specified below),
+    and an input file name. 
     2. With goal=spk, The program will implement the full spk-means algorithm. 
     3. Interfacing with the C extension spkmeansmodule, all implementations of the different goals
     will be performed by calling the C extension and calculated in C. 
